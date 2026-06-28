@@ -2,6 +2,11 @@ package model;
 
 import model.entity.plant.Plant;
 import model.enums.Menu;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +18,8 @@ import java.util.Map;
  * Implements a singleton pattern to ensure only one game instance exists.
  */
 public class App {
+    private static final Path DATA_DIRECTORY = Path.of("data");
+    private static final Path USERS_FILE = DATA_DIRECTORY.resolve("users.tsv");
     private static User loggedInUser = null;
     private static Menu currentMenu = Menu.Signup;
     private static GameplaySession currentSession = null;
@@ -58,6 +65,7 @@ public class App {
             throw new IllegalArgumentException("user cannot be null");
         }
         users.put(normalizeUsername(user.getUsername()), user);
+        saveGameState();
     }
 
     public static User findUser(String username) {
@@ -93,13 +101,36 @@ public class App {
      * Save all game data to persistent storage
      */
     public static void saveGameState() {
-        // TODO: Implementation - Serialize user data and progress
+        try {
+            Files.createDirectories(DATA_DIRECTORY);
+            List<String> records = new ArrayList<>();
+            for (User user : users.values()) {
+                records.add(user.toStorageRecord());
+            }
+            Files.write(USERS_FILE, records);
+        } catch (IOException exception) {
+            throw new IllegalStateException("could not save game state", exception);
+        }
     }
 
     /**
      * Load all game data from persistent storage
      */
     public static void loadGameState() {
-        // TODO: Implementation - Deserialize user data and progress
+        users.clear();
+        if (!Files.exists(USERS_FILE)) {
+            return;
+        }
+        try {
+            for (String line : Files.readAllLines(USERS_FILE)) {
+                if (line.isBlank()) {
+                    continue;
+                }
+                User user = User.fromStorageRecord(line);
+                users.put(normalizeUsername(user.getUsername()), user);
+            }
+        } catch (IOException exception) {
+            throw new IllegalStateException("could not load game state", exception);
+        }
     }
 }

@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +82,11 @@ public class User {
      * Verify if the given password matches the stored hash
      */
     public boolean verifyPassword(String password) {
-        return passwordHash.equals(hashPassword(password));
+        try {
+            return passwordHash.equals(hashPassword(password));
+        } catch (IllegalArgumentException exception) {
+            return false;
+        }
     }
 
     public String getEmail() {
@@ -195,6 +200,37 @@ public class User {
         // TODO: Implementation
     }
 
+    public String toStorageRecord() {
+        return String.join("\t",
+                encode(username),
+                encode(nickname),
+                encode(passwordHash),
+                encode(email),
+                encode(gender),
+                Long.toString(createdAt.getTime()),
+                Integer.toString(coins),
+                Integer.toString(gems),
+                Integer.toString(difficultyLevel),
+                Boolean.toString(stayLoggedIn));
+    }
+
+    public static User fromStorageRecord(String record) {
+        String[] fields = record.split("\t", -1);
+        if (fields.length != 10) {
+            throw new IllegalArgumentException("invalid user record");
+        }
+
+        User user = new User(decode(fields[0]), "temporary-password", decode(fields[3]), decode(fields[1]));
+        user.setPasswordHash(decode(fields[2]));
+        user.gender = decode(fields[4]);
+        user.createdAt = new Date(Long.parseLong(fields[5]));
+        user.coins = Integer.parseInt(fields[6]);
+        user.gems = Integer.parseInt(fields[7]);
+        user.setDifficultyLevel(Integer.parseInt(fields[8]));
+        user.stayLoggedIn = Boolean.parseBoolean(fields[9]);
+        return user;
+    }
+
     public static String hashPassword(String password) {
         if (password == null || password.length() < 4) {
             throw new IllegalArgumentException("password must be at least 4 characters");
@@ -210,5 +246,14 @@ public class User {
         } catch (NoSuchAlgorithmException exception) {
             throw new IllegalStateException("SHA-256 is not available", exception);
         }
+    }
+
+    private static String encode(String value) {
+        String safeValue = value == null ? "" : value;
+        return Base64.getEncoder().encodeToString(safeValue.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String decode(String value) {
+        return new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
     }
 }

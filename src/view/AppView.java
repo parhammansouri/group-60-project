@@ -7,9 +7,11 @@ import java.util.Scanner;
 
 public class AppView {
     public void run() {
+        App.loadGameState();
         Scanner scanner = new Scanner(System.in);
         do {
             App.getCurrentMenu().handle(scanner);
         } while (App.getCurrentMenu() != Menu.Exit);
+        App.saveGameState();
     }
 }

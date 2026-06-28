@@ -23,6 +23,7 @@ public class SettingsMenu implements AppMenu {
         if (parts.length == 2 && parts[0].equals("difficulty")) {
             try {
                 user.setDifficultyLevel(Integer.parseInt(parts[1]));
+                App.saveGameState();
                 System.out.println("difficulty updated");
             } catch (IllegalArgumentException exception) {
                 System.out.println(exception.getMessage());
