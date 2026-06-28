@@ -56,7 +56,7 @@ public class User {
         this.createdAt = new Date();
         this.newsList = new HashMap<>();
         this.coins = 100;
-        this.gems = 0;
+        this.gems = 3;
         this.difficultyLevel = 1;
         this.stayLoggedIn = false;
         this.unlockedPlants = new ArrayList<>();

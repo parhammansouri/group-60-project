@@ -1,6 +1,8 @@
 package model.greenhouse;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Manages the player's greenhouse where plants can be grown to gain rewards.
@@ -14,65 +16,122 @@ public class Greenhouse {
 
     private GreenhousePot[][] pots;
     private Map<Integer, Integer> unlockedPots; // potId -> true if unlocked
+    private final Random random = new Random();
 
     public Greenhouse() {
-        // TODO: Implementation - Initialize 20 pots, first 5 unlocked
+        pots = new GreenhousePot[ROWS][COLS];
+        unlockedPots = new HashMap<>();
+        for (int y = 0; y < ROWS; y++) {
+            for (int x = 0; x < COLS; x++) {
+                boolean unlocked = y == 0;
+                pots[y][x] = new GreenhousePot(x, y, unlocked);
+                unlockedPots.put(potId(x, y), unlocked ? 1 : 0);
+            }
+        }
     }
 
     public GreenhousePot getPot(int x, int y) {
-        // TODO: Implementation
-        return null;
+        if (!isInside(x, y)) {
+            return null;
+        }
+        return pots[y][x];
     }
 
     public boolean isPotUnlocked(int x, int y) {
-        // TODO: Implementation
-        return false;
+        return isInside(x, y) && pots[y][x].isUnlocked();
     }
 
     /**
      * Unlock a pot with coins
      */
     public boolean unlockPot(int x, int y, int coinsAvailable) {
-        // TODO: Implementation - Costs 2000 coins
-        return false;
+        if (!isInside(x, y) || pots[y][x].isUnlocked() || coinsAvailable < 2000) {
+            return false;
+        }
+        pots[y][x].unlock();
+        unlockedPots.put(potId(x, y), 1);
+        return true;
     }
 
     /**
      * Plant a random plant in a pot
      */
     public boolean plantInPot(int x, int y) {
-        // TODO: Implementation - 50% chance marigold, 50% random unlocked plant
-        return false;
+        if (!isInside(x, y)) {
+            return false;
+        }
+        String plantType = random.nextBoolean() ? "marigold" : "basic";
+        return pots[y][x].plant(plantType);
     }
 
     /**
      * Collect a fully grown plant from a pot
      */
     public Integer collectPlant(int x, int y) {
-        // TODO: Implementation - Returns coins or seed packet ID
-        return null;
+        if (!isInside(x, y)) {
+            return null;
+        }
+        String plantType = pots[y][x].collect();
+        if (plantType == null) {
+            return null;
+        }
+        return "marigold".equals(plantType) ? 50 : 1;
     }
 
     /**
      * Grow a pot instantly for gems
      */
     public boolean growInstant(int x, int y, int gemsAvailable) {
-        // TODO: Implementation - Costs 1 gem per hour remaining
-        return false;
+        if (!isInside(x, y) || pots[y][x].isEmpty() || gemsAvailable < 1) {
+            return false;
+        }
+        pots[y][x].makeReady();
+        return true;
     }
 
     /**
      * Update greenhouse state (called periodically based on system time)
      */
     public void update() {
-        // TODO: Implementation - Grow plants based on elapsed time
+        for (GreenhousePot[] row : pots) {
+            for (GreenhousePot pot : row) {
+                pot.updateGrowth();
+            }
+        }
     }
 
     /**
      * Get overall greenhouse status for display
      */
     public String getStatus() {
-        // TODO: Implementation
-        return "";
+        update();
+        StringBuilder builder = new StringBuilder();
+        for (int y = 0; y < ROWS; y++) {
+            builder.append(y + 1).append(" ");
+            for (int x = 0; x < COLS; x++) {
+                GreenhousePot pot = pots[y][x];
+                if (!pot.isUnlocked()) {
+                    builder.append("#");
+                } else if (pot.isEmpty()) {
+                    builder.append(".");
+                } else if (pot.isReady()) {
+                    builder.append("R");
+                } else {
+                    builder.append("G");
+                }
+                builder.append(" ");
+            }
+            builder.append(System.lineSeparator());
+        }
+        builder.append("  1 2 3 4 5");
+        return builder.toString();
+    }
+
+    private boolean isInside(int x, int y) {
+        return x >= 0 && x < COLS && y >= 0 && y < ROWS;
+    }
+
+    private int potId(int x, int y) {
+        return y * COLS + x;
     }
 }

@@ -1,6 +1,7 @@
 package model.greenhouse;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Represents a single pot in the greenhouse.
@@ -15,46 +16,55 @@ public class GreenhousePot {
     private LocalTime readyTime;
     private GrowthPhase growthPhase;
 
+    public GreenhousePot(int x, int y, boolean unlocked) {
+        this.x = x;
+        this.y = y;
+        this.isUnlocked = unlocked;
+        this.plantType = null;
+        this.growthPhase = GrowthPhase.SEED;
+    }
+
     public int getX() {
-        // TODO: Implementation
         return x;
     }
 
     public int getY() {
-        // TODO: Implementation
         return y;
     }
 
     public boolean isUnlocked() {
-        // TODO: Implementation
         return isUnlocked;
     }
 
+    public void unlock() {
+        isUnlocked = true;
+    }
+
     public boolean isEmpty() {
-        // TODO: Implementation
         return plantType == null;
     }
 
     public String getPlantType() {
-        // TODO: Implementation
         return plantType;
     }
 
     public boolean isReady() {
-        // TODO: Implementation
-        return plantType != null;
+        updateGrowth();
+        return plantType != null && growthPhase == GrowthPhase.READY;
     }
 
     /**
      * Get time remaining until plant is ready
      */
     public long getTimeRemaining() {
-        // TODO: Implementation
-        return 0L;
+        if (readyTime == null || isReady()) {
+            return 0L;
+        }
+        return Math.max(0L, ChronoUnit.SECONDS.between(LocalTime.now(), readyTime));
     }
 
     public GrowthPhase getGrowthPhase() {
-        // TODO: Implementation
+        updateGrowth();
         return growthPhase;
     }
 
@@ -62,7 +72,46 @@ public class GreenhousePot {
      * Update the growth status based on elapsed time
      */
     public void updateGrowth() {
-        // TODO: Implementation
+        if (plantType == null || readyTime == null) {
+            return;
+        }
+        long remaining = ChronoUnit.SECONDS.between(LocalTime.now(), readyTime);
+        if (remaining <= 0) {
+            growthPhase = GrowthPhase.READY;
+        } else if (remaining <= 2) {
+            growthPhase = GrowthPhase.GROWING;
+        } else {
+            growthPhase = GrowthPhase.SPROUT;
+        }
+    }
+
+    public boolean plant(String plantType) {
+        if (!isUnlocked || !isEmpty()) {
+            return false;
+        }
+        this.plantType = plantType;
+        this.plantedTime = LocalTime.now();
+        this.readyTime = plantedTime.plusSeconds(5);
+        this.growthPhase = GrowthPhase.SEED;
+        return true;
+    }
+
+    public void makeReady() {
+        if (plantType != null) {
+            readyTime = LocalTime.now();
+            growthPhase = GrowthPhase.READY;
+        }
+    }
+
+    public String collect() {
+        if (!isReady()) {
+            return null;
+        }
+        String harvestedPlant = plantType;
+        plantType = null;
+        plantedTime = null;
+        readyTime = null;
+        growthPhase = GrowthPhase.SEED;
+        return harvestedPlant;
     }
 }
-
