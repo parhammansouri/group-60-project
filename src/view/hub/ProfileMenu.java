@@ -24,6 +24,8 @@ public class ProfileMenu implements AppMenu {
         System.out.println("difficulty: " + user.getDifficultyLevel());
         System.out.println("coins: " + user.getCoins());
         System.out.println("gems: " + user.getGems());
+        System.out.println("highest score: " + user.getHighestScore());
+        System.out.println("progress: chapter " + user.getMaxChapter() + " level " + user.getMaxLevel());
         System.out.println("back | exit");
 
         String input = scanner.nextLine().trim();

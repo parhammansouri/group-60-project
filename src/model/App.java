@@ -97,6 +97,18 @@ public class App {
      * End the current game session
      */
     public static void endSession() {
+        if (loggedInUser != null && currentSession != null) {
+            loggedInUser.addCoins(currentSession.getCoins());
+            loggedInUser.addGems(currentSession.getGems());
+            loggedInUser.submitScore(currentSession.getPlayerScore());
+            if (currentSession.hasWon()) {
+                loggedInUser.addCoins(currentSession.getLevel().getRewardCoins());
+                loggedInUser.addGems(currentSession.getLevel().getRewardGems());
+                loggedInUser.updateProgress(currentSession.getLevel().getChapterNumber(),
+                        currentSession.getLevel().getLevelNumber());
+            }
+            saveGameState();
+        }
         currentSession = null;
     }
 

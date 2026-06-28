@@ -13,43 +13,48 @@ public class LeaderboardEntry {
     private int totalQuestsCompleted;
     private int highestScore;
 
+    public LeaderboardEntry(String username, String nickname, int maxChapter, int maxLevel,
+                            int minigamesCompleted, int dailyQuestsCompleted,
+                            int totalQuestsCompleted, int highestScore) {
+        this.username = username;
+        this.nickname = nickname;
+        this.maxChapter = maxChapter;
+        this.maxLevel = maxLevel;
+        this.minigamesCompleted = minigamesCompleted;
+        this.dailyQuestsCompleted = dailyQuestsCompleted;
+        this.totalQuestsCompleted = totalQuestsCompleted;
+        this.highestScore = highestScore;
+    }
+
     public String getUsername() {
-        // TODO: Implementation
         return username;
     }
 
     public String getNickname() {
-        // TODO: Implementation
         return nickname;
     }
 
     public int getMaxChapter() {
-        // TODO: Implementation
         return maxChapter;
     }
 
     public int getMaxLevel() {
-        // TODO: Implementation
         return maxLevel;
     }
 
     public int getMinigamesCompleted() {
-        // TODO: Implementation
         return minigamesCompleted;
     }
 
     public int getDailyQuestsCompleted() {
-        // TODO: Implementation
         return dailyQuestsCompleted;
     }
 
     public int getTotalQuestsCompleted() {
-        // TODO: Implementation
         return totalQuestsCompleted;
     }
 
     public int getHighestScore() {
-        // TODO: Implementation
         return highestScore;
     }
 
@@ -57,20 +62,23 @@ public class LeaderboardEntry {
      * Update the max chapter and level
      */
     public void updateProgress(int chapter, int level) {
-        // TODO: Implementation
+        if (chapter > maxChapter || chapter == maxChapter && level > maxLevel) {
+            maxChapter = chapter;
+            maxLevel = level;
+        }
     }
 
     /**
      * Increment minigames completed
      */
     public void addMinigameCompletion() {
-        // TODO: Implementation
+        minigamesCompleted++;
     }
 
     /**
      * Submit a new high score
      */
     public void submitScore(int score) {
-        // TODO: Implementation
+        highestScore = Math.max(highestScore, score);
     }
 }

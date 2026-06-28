@@ -151,6 +151,18 @@ public class GameplaySession {
         return plantFoodCount;
     }
 
+    public int getCoins() {
+        return coins;
+    }
+
+    public int getGems() {
+        return gems;
+    }
+
+    public int getPlayerScore() {
+        return playerScore;
+    }
+
     /**
      * Add plant food to inventory
      */

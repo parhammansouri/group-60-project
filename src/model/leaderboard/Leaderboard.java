@@ -1,7 +1,10 @@
 package model.leaderboard;
 
+import model.App;
 import model.User;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -11,11 +14,13 @@ public class Leaderboard {
     private List<LeaderboardEntry> entries;
 
     public Leaderboard() {
-        // TODO: Implementation - Load all user entries
+        entries = new ArrayList<>();
+        for (User user : App.getUsers()) {
+            addEntry(user);
+        }
     }
 
     public List<LeaderboardEntry> getEntries() {
-        // TODO: Implementation
         return entries;
     }
 
@@ -23,39 +28,51 @@ public class Leaderboard {
      * Get leaderboard sorted by max chapter progress
      */
     public List<LeaderboardEntry> sortedByProgress() {
-        // TODO: Implementation
-        return null;
+        return entries.stream()
+                .sorted(Comparator.comparingInt(LeaderboardEntry::getMaxChapter).reversed()
+                        .thenComparing(Comparator.comparingInt(LeaderboardEntry::getMaxLevel).reversed()))
+                .toList();
     }
 
     /**
      * Get leaderboard sorted by minigame completions
      */
     public List<LeaderboardEntry> sortedByMinigames() {
-        // TODO: Implementation
-        return null;
+        return entries.stream()
+                .sorted(Comparator.comparingInt(LeaderboardEntry::getMinigamesCompleted).reversed())
+                .toList();
     }
 
     /**
      * Get leaderboard sorted by quests completed
      */
     public List<LeaderboardEntry> sortedByQuests() {
-        // TODO: Implementation
-        return null;
+        return entries.stream()
+                .sorted(Comparator.comparingInt(LeaderboardEntry::getTotalQuestsCompleted).reversed())
+                .toList();
     }
 
     /**
      * Get leaderboard sorted by highest score
      */
     public List<LeaderboardEntry> sortedByHighScore() {
-        // TODO: Implementation
-        return null;
+        return entries.stream()
+                .sorted(Comparator.comparingInt(LeaderboardEntry::getHighestScore).reversed())
+                .toList();
     }
 
     /**
      * Get a specific player's entry
      */
     public LeaderboardEntry getPlayerEntry(User user) {
-        // TODO: Implementation
+        if (user == null) {
+            return null;
+        }
+        for (LeaderboardEntry entry : entries) {
+            if (entry.getUsername().equals(user.getUsername())) {
+                return entry;
+            }
+        }
         return null;
     }
 
@@ -63,13 +80,22 @@ public class Leaderboard {
      * Update a player's leaderboard entry
      */
     public void updateEntry(User user, LeaderboardEntry entry) {
-        // TODO: Implementation
+        LeaderboardEntry oldEntry = getPlayerEntry(user);
+        if (oldEntry != null) {
+            entries.remove(oldEntry);
+        }
+        entries.add(entry);
     }
 
     /**
      * Add a new player to the leaderboard
      */
     public void addEntry(User user) {
-        // TODO: Implementation
+        if (getPlayerEntry(user) != null) {
+            return;
+        }
+        entries.add(new LeaderboardEntry(user.getUsername(), user.getNickname(), user.getMaxChapter(),
+                user.getMaxLevel(), user.getMinigamesCompleted(), 0, user.getQuestsCompleted(),
+                user.getHighestScore()));
     }
 }

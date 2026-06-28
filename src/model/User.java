@@ -31,6 +31,11 @@ public class User {
     private boolean stayLoggedIn;
     private String securityQuestion;
     private String securityAnswer;
+    private int highestScore;
+    private int maxChapter;
+    private int maxLevel;
+    private int minigamesCompleted;
+    private int questsCompleted;
 
     private List<Plant> unlockedPlants;
     private List<String> unlockedPlantTypes;
@@ -56,6 +61,11 @@ public class User {
         this.stayLoggedIn = false;
         this.unlockedPlants = new ArrayList<>();
         this.unlockedPlantTypes = new ArrayList<>();
+        this.highestScore = 0;
+        this.maxChapter = 1;
+        this.maxLevel = 1;
+        this.minigamesCompleted = 0;
+        this.questsCompleted = 0;
         unlockPlant("basic");
     }
 
@@ -236,6 +246,45 @@ public class User {
         return true;
     }
 
+    public int getHighestScore() {
+        return highestScore;
+    }
+
+    public void submitScore(int score) {
+        highestScore = Math.max(highestScore, score);
+    }
+
+    public int getMaxChapter() {
+        return maxChapter;
+    }
+
+    public int getMaxLevel() {
+        return maxLevel;
+    }
+
+    public void updateProgress(int chapter, int level) {
+        if (chapter > maxChapter || chapter == maxChapter && level > maxLevel) {
+            maxChapter = chapter;
+            maxLevel = level;
+        }
+    }
+
+    public int getMinigamesCompleted() {
+        return minigamesCompleted;
+    }
+
+    public void addMinigameCompletion() {
+        minigamesCompleted++;
+    }
+
+    public int getQuestsCompleted() {
+        return questsCompleted;
+    }
+
+    public void addQuestCompletion() {
+        questsCompleted++;
+    }
+
     public String toStorageRecord() {
         return String.join("\t",
                 encode(username),
@@ -248,12 +297,17 @@ public class User {
                 Integer.toString(gems),
                 Integer.toString(difficultyLevel),
                 Boolean.toString(stayLoggedIn),
-                encode(String.join(",", unlockedPlantTypes)));
+                encode(String.join(",", unlockedPlantTypes)),
+                Integer.toString(highestScore),
+                Integer.toString(maxChapter),
+                Integer.toString(maxLevel),
+                Integer.toString(minigamesCompleted),
+                Integer.toString(questsCompleted));
     }
 
     public static User fromStorageRecord(String record) {
         String[] fields = record.split("\t", -1);
-        if (fields.length != 10 && fields.length != 11) {
+        if (fields.length != 10 && fields.length != 11 && fields.length != 16) {
             throw new IllegalArgumentException("invalid user record");
         }
 
@@ -272,6 +326,13 @@ public class User {
             }
         } else {
             user.unlockPlant("basic");
+        }
+        if (fields.length == 16) {
+            user.highestScore = Integer.parseInt(fields[11]);
+            user.maxChapter = Integer.parseInt(fields[12]);
+            user.maxLevel = Integer.parseInt(fields[13]);
+            user.minigamesCompleted = Integer.parseInt(fields[14]);
+            user.questsCompleted = Integer.parseInt(fields[15]);
         }
         return user;
     }
