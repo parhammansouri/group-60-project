@@ -15,43 +15,47 @@ public class ShopItem {
     private int maxCapacity;
     private String associatedPlant;
 
+    public ShopItem(String itemId, String name, ShopItemType type, int costCoins, int costGems,
+                    int quantity, int maxCapacity, String associatedPlant) {
+        this.itemId = itemId;
+        this.name = name;
+        this.type = type;
+        this.costCoins = costCoins;
+        this.costGems = costGems;
+        this.quantity = quantity;
+        this.maxCapacity = maxCapacity;
+        this.associatedPlant = associatedPlant;
+    }
+
     public String getItemId() {
-        // TODO: Implementation
         return itemId;
     }
 
     public String getName() {
-        // TODO: Implementation
         return name;
     }
 
     public ShopItemType getType() {
-        // TODO: Implementation
         return type;
     }
 
     public int getCostCoins() {
-        // TODO: Implementation
         return costCoins;
     }
 
     public int getCostGems() {
-        // TODO: Implementation
         return costGems;
     }
 
     public int getQuantity() {
-        // TODO: Implementation
         return quantity;
     }
 
     public int getMaxCapacity() {
-        // TODO: Implementation
         return maxCapacity;
     }
 
     public String getAssociatedPlant() {
-        // TODO: Implementation
         return associatedPlant;
     }
 
@@ -59,8 +63,9 @@ public class ShopItem {
      * Check if this item can be purchased right now
      */
     public boolean canPurchase(User user, int currentCount) {
-        // TODO: Implementation - Check currency and capacity
-        return false;
+        if (user == null || user.getCoins() < costCoins || user.getGems() < costGems) {
+            return false;
+        }
+        return maxCapacity <= 0 || currentCount + quantity <= maxCapacity;
     }
 }
-

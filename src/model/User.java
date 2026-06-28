@@ -33,6 +33,7 @@ public class User {
     private String securityAnswer;
 
     private List<Plant> unlockedPlants;
+    private List<String> unlockedPlantTypes;
 
     // TODO: Add collection of unlocked plants
     // TODO: Add collection of seen zombies
@@ -49,11 +50,13 @@ public class User {
         setNickname(nickname == null || nickname.isBlank() ? username : nickname);
         this.createdAt = new Date();
         this.newsList = new HashMap<>();
-        this.coins = 0;
+        this.coins = 100;
         this.gems = 0;
         this.difficultyLevel = 1;
         this.stayLoggedIn = false;
         this.unlockedPlants = new ArrayList<>();
+        this.unlockedPlantTypes = new ArrayList<>();
+        unlockPlant("basic");
     }
 
     public String getUsername() {
@@ -216,6 +219,23 @@ public class User {
         // TODO: Implementation
     }
 
+    public List<String> getUnlockedPlantTypes() {
+        return unlockedPlantTypes;
+    }
+
+    public boolean hasUnlockedPlant(String plantType) {
+        return unlockedPlantTypes.contains(normalizePlantType(plantType));
+    }
+
+    public boolean unlockPlant(String plantType) {
+        String normalized = normalizePlantType(plantType);
+        if (normalized.isBlank() || unlockedPlantTypes.contains(normalized)) {
+            return false;
+        }
+        unlockedPlantTypes.add(normalized);
+        return true;
+    }
+
     public String toStorageRecord() {
         return String.join("\t",
                 encode(username),
@@ -227,12 +247,13 @@ public class User {
                 Integer.toString(coins),
                 Integer.toString(gems),
                 Integer.toString(difficultyLevel),
-                Boolean.toString(stayLoggedIn));
+                Boolean.toString(stayLoggedIn),
+                encode(String.join(",", unlockedPlantTypes)));
     }
 
     public static User fromStorageRecord(String record) {
         String[] fields = record.split("\t", -1);
-        if (fields.length != 10) {
+        if (fields.length != 10 && fields.length != 11) {
             throw new IllegalArgumentException("invalid user record");
         }
 
@@ -244,6 +265,14 @@ public class User {
         user.gems = Integer.parseInt(fields[7]);
         user.setDifficultyLevel(Integer.parseInt(fields[8]));
         user.stayLoggedIn = Boolean.parseBoolean(fields[9]);
+        user.unlockedPlantTypes.clear();
+        if (fields.length == 11 && !decode(fields[10]).isBlank()) {
+            for (String plantType : decode(fields[10]).split(",")) {
+                user.unlockPlant(plantType);
+            }
+        } else {
+            user.unlockPlant("basic");
+        }
         return user;
     }
 
@@ -271,5 +300,9 @@ public class User {
 
     private static String decode(String value) {
         return new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
+    }
+
+    private static String normalizePlantType(String plantType) {
+        return plantType == null ? "" : plantType.trim().toLowerCase();
     }
 }
