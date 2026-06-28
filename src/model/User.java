@@ -1,0 +1,214 @@
+package model;
+
+import model.entity.plant.Plant;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Represents a user account in the game.
+ * Stores all persistent user information including profile data,
+ * game progress, currency, and account settings.
+ */
+public class User {
+    private String username;
+    private String nickname;
+    private String passwordHash;
+    private String email;
+    private String gender;
+    private Date createdAt;
+    private Map<News, Boolean> newsList; // (news, seenStatus)
+    private int coins;
+    private int gems;
+    private int difficultyLevel;
+    private boolean stayLoggedIn;
+    private String securityQuestion;
+    private String securityAnswer;
+
+    private List<Plant> unlockedPlants;
+
+    // TODO: Add collection of unlocked plants
+    // TODO: Add collection of seen zombies
+    // TODO: Add progress tracking data
+    // TODO: Add quest completion tracking
+
+    public User(String username, String password, String email, String nickname) {
+        if (username == null || !username.matches("[A-Za-z0-9_]{3,30}")) {
+            throw new IllegalArgumentException("username must be 3-30 letters, digits, or underscores");
+        }
+        this.username = username;
+        setPasswordHash(hashPassword(password));
+        setEmail(email);
+        setNickname(nickname == null || nickname.isBlank() ? username : nickname);
+        this.createdAt = new Date();
+        this.newsList = new HashMap<>();
+        this.coins = 0;
+        this.gems = 0;
+        this.difficultyLevel = 1;
+        this.stayLoggedIn = false;
+        this.unlockedPlants = new ArrayList<>();
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        if (nickname == null || nickname.length() < 3 || nickname.length() > 30) {
+            throw new IllegalArgumentException("nickname must be 3-30 characters");
+        }
+        this.nickname = nickname;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        if (passwordHash == null || passwordHash.isBlank()) {
+            throw new IllegalArgumentException("password cannot be empty");
+        }
+        this.passwordHash = passwordHash;
+    }
+
+    /**
+     * Verify if the given password matches the stored hash
+     */
+    public boolean verifyPassword(String password) {
+        return passwordHash.equals(hashPassword(password));
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        if (email == null || !email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+            throw new IllegalArgumentException("email format is invalid");
+        }
+        this.email = email;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public Map<News, Boolean> getNewsList() {
+        return newsList;
+    }
+
+    public boolean hasSeenNews(News news) {
+        return Boolean.TRUE.equals(newsList.get(news));
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+    public void addCoins(int amount) {
+        if (amount > 0) {
+            coins += amount;
+        }
+    }
+
+    public boolean removeCoins(int amount) {
+        if (amount < 0 || coins < amount) {
+            return false;
+        }
+        coins -= amount;
+        return true;
+    }
+
+    public int getGems() {
+        return gems;
+    }
+
+    public void addGems(int amount) {
+        if (amount > 0) {
+            gems += amount;
+        }
+    }
+
+    public boolean removeGems(int amount) {
+        if (amount < 0 || gems < amount) {
+            return false;
+        }
+        gems -= amount;
+        return true;
+    }
+
+    /**
+     * Get the current difficulty level (1-5)
+     */
+    public int getDifficultyLevel() {
+        return difficultyLevel;
+    }
+
+    /**
+     * Set the game difficulty level (1-5)
+     */
+    public void setDifficultyLevel(int level) {
+        if (level < 1 || level > 5) {
+            throw new IllegalArgumentException("difficulty level must be between 1 and 5");
+        }
+        difficultyLevel = level;
+    }
+
+    public Date getCreatedAt() {
+        return new Date(createdAt.getTime());
+    }
+
+    public boolean isStayLoggedIn() {
+        return stayLoggedIn;
+    }
+
+    public void setStayLoggedIn(boolean stay) {
+        stayLoggedIn = stay;
+    }
+
+    public String getSecurityQuestion() {
+        return securityQuestion;
+    }
+
+    public boolean verifySecurityAnswer(String answer) {
+        return securityAnswer != null && securityAnswer.equalsIgnoreCase(answer == null ? "" : answer.trim());
+    }
+
+    /**
+     * Set a new password through security question verification
+     */
+    public void resetPassword(String newPassword) {
+        setPasswordHash(hashPassword(newPassword));
+    }
+
+    public List<Plant> getUnlockedPlants() {
+        return unlockedPlants;
+    }
+
+    public void unlockPlant() {
+        // TODO: Implementation
+    }
+
+    public static String hashPassword(String password) {
+        if (password == null || password.length() < 4) {
+            throw new IllegalArgumentException("password must be at least 4 characters");
+        }
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encoded = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder result = new StringBuilder();
+            for (byte b : encoded) {
+                result.append(String.format("%02x", b));
+            }
+            return result.toString();
+        } catch (NoSuchAlgorithmException exception) {
+            throw new IllegalStateException("SHA-256 is not available", exception);
+        }
+    }
+}
