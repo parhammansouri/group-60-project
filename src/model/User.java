@@ -104,6 +104,14 @@ public class User {
         return gender;
     }
 
+    public void setGender(String gender) {
+        if (gender == null || gender.isBlank()) {
+            this.gender = "";
+            return;
+        }
+        this.gender = gender.trim();
+    }
+
     public Map<News, Boolean> getNewsList() {
         return newsList;
     }
@@ -190,6 +198,14 @@ public class User {
      */
     public void resetPassword(String newPassword) {
         setPasswordHash(hashPassword(newPassword));
+    }
+
+    public boolean changePassword(String currentPassword, String newPassword) {
+        if (!verifyPassword(currentPassword)) {
+            return false;
+        }
+        resetPassword(newPassword);
+        return true;
     }
 
     public List<Plant> getUnlockedPlants() {

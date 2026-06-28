@@ -20,6 +20,8 @@ public class ProfileMenu implements AppMenu {
         System.out.println("username: " + user.getUsername());
         System.out.println("nickname: " + user.getNickname());
         System.out.println("email: " + user.getEmail());
+        System.out.println("gender: " + user.getGender());
+        System.out.println("difficulty: " + user.getDifficultyLevel());
         System.out.println("coins: " + user.getCoins());
         System.out.println("gems: " + user.getGems());
         System.out.println("back | exit");
