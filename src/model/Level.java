@@ -1,6 +1,8 @@
 package model;
 
 import model.enums.LevelType;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,23 +25,40 @@ public class Level {
     private int rows;
     private int cols;
 
+    public Level() {
+        this(1, 1, LevelType.REGULAR, Arrays.asList(10, 18, 28), 100, 1, 0, 5, 9);
+    }
+
+    public Level(int levelNumber, int chapterNumber, LevelType type, List<Integer> waveZombieCosts,
+                 int rewardCoins, int rewardGems, int rewardSeedPackets, int rows, int cols) {
+        this.levelNumber = levelNumber;
+        this.chapterNumber = chapterNumber;
+        this.type = type == null ? LevelType.REGULAR : type;
+        this.waveZombieCosts = new ArrayList<>(waveZombieCosts);
+        this.numWaves = this.waveZombieCosts.size();
+        this.rewardCoins = rewardCoins;
+        this.rewardGems = rewardGems;
+        this.rewardSeedPackets = rewardSeedPackets;
+        this.isCompleted = false;
+        this.isUnlocked = true;
+        this.highScore = 0;
+        this.rows = rows;
+        this.cols = cols;
+    }
+
     public int getLevelNumber() {
-        // TODO: Implementation
         return levelNumber;
     }
 
     public int getChapterNumber() {
-        // TODO: Implementation
         return chapterNumber;
     }
 
     public LevelType getType() {
-        // TODO: Implementation
         return type;
     }
 
     public int getNumWaves() {
-        // TODO: Implementation
         return numWaves;
     }
 
@@ -47,32 +66,29 @@ public class Level {
      * Get the difficulty cost for a specific wave
      */
     public int getWaveCost(int waveNumber) {
-        // TODO: Implementation
-        return 0;
+        if (waveNumber < 1 || waveNumber > waveZombieCosts.size()) {
+            return 0;
+        }
+        return waveZombieCosts.get(waveNumber - 1);
     }
 
     public List<Integer> getWaveCosts() {
-        // TODO: Implementation
         return waveZombieCosts;
     }
 
     public int getRewardCoins() {
-        // TODO: Implementation
         return rewardCoins;
     }
 
     public int getRewardGems() {
-        // TODO: Implementation
         return rewardGems;
     }
 
     public int getRewardSeedPackets() {
-        // TODO: Implementation
         return rewardSeedPackets;
     }
 
     public boolean isCompleted() {
-        // TODO: Implementation
         return isCompleted;
     }
 
@@ -80,11 +96,10 @@ public class Level {
      * Mark this level as completed
      */
     public void markCompleted() {
-        // TODO: Implementation
+        isCompleted = true;
     }
 
     public boolean isUnlocked() {
-        // TODO: Implementation
         return isUnlocked;
     }
 
@@ -92,25 +107,22 @@ public class Level {
      * Unlock this level
      */
     public void unlock() {
-        // TODO: Implementation
+        isUnlocked = true;
     }
 
     public int getHighScore() {
-        // TODO: Implementation
         return highScore;
     }
 
     public void setHighScore(int score) {
-        // TODO: Implementation
+        highScore = Math.max(highScore, score);
     }
 
     public int getRows() {
-        // TODO: Implementation
         return rows;
     }
 
     public int getCols() {
-        // TODO: Implementation
         return cols;
     }
 }

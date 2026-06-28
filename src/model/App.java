@@ -2,6 +2,7 @@ package model;
 
 import model.entity.plant.Plant;
 import model.enums.Menu;
+import model.factory.PlantFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -81,19 +82,21 @@ public class App {
     }
 
     public static GameplaySession getCurrentSession() {
-        // TODO: Implementation
         return currentSession;
     }
 
     public static void createNewSession(Chapter chapter, Level level, List<Plant> selectedPlants) {
-        // TODO: Implementation - Initialize board, waves, etc.
+        Level activeLevel = level == null ? new Level() : level;
+        List<Plant> plants = selectedPlants == null || selectedPlants.isEmpty()
+                ? List.of(PlantFactory.create("basic"), PlantFactory.create("shooter"), PlantFactory.create("slow"))
+                : selectedPlants;
+        currentSession = new GameplaySession(chapter, activeLevel, plants);
     }
 
     /**
      * End the current game session
      */
     public static void endSession() {
-        // TODO: Implementation - Save progress, calculate rewards
         currentSession = null;
     }
 

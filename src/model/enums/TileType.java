@@ -25,15 +25,13 @@ public enum TileType {
      * Check if this tile type can have plants placed on it normally
      */
     public boolean isPlantable() {
-        // TODO: Implementation
-        return false;
+        return this == GRASS || this == LOW_BEACH;
     }
 
     /**
      * Check if this tile type can have zombies walk on it
      */
     public boolean isWalkable() {
-        // TODO: Implementation
-        return false;
+        return this != WATER;
     }
 }

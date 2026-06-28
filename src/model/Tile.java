@@ -1,6 +1,11 @@
 package model;
 
 import model.enums.TileType;
+import model.entity.plant.Plant;
+import model.entity.zombie.Zombie;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a single tile on the game board.
@@ -11,8 +16,8 @@ public class Tile {
     private int x;
     private int y;
     private TileType type;
-    // TODO: Add references to plants and zombies that occupy this tile
-    // TODO: Add methods to check and manage tile content
+    private Plant plant;
+    private final List<Zombie> zombies = new ArrayList<>();
 
     public Tile(int x, int y, TileType type) {
         this.x = x;
@@ -21,37 +26,62 @@ public class Tile {
     }
 
     public int getX() {
-        // TODO: Implementation
         return x;
     }
 
     public int getY() {
-        // TODO: Implementation
         return y;
     }
 
     public TileType getType() {
-        // TODO: Implementation
         return type;
     }
 
     public void setType(TileType type) {
-        // TODO: Implementation
+        this.type = type;
     }
 
     /**
      * Check if this tile can accommodate a plant
      */
     public boolean canPlacePlant() {
-        // TODO: Implementation
-        return false;
+        return type.isPlantable() && plant == null;
     }
 
     /**
      * Check if this tile is currently empty
      */
     public boolean isEmpty() {
-        // TODO: Implementation
-        return false;
+        return plant == null && zombies.isEmpty();
+    }
+
+    public Plant getPlant() {
+        return plant;
+    }
+
+    public void setPlant(Plant plant) {
+        this.plant = plant;
+        if (plant != null) {
+            plant.setPosition(x, y);
+        }
+    }
+
+    public void removePlant() {
+        this.plant = null;
+    }
+
+    public List<Zombie> getZombies() {
+        return zombies;
+    }
+
+    public void addZombie(Zombie zombie) {
+        if (zombie != null && !zombies.contains(zombie)) {
+            zombie.setPosition(x, y);
+            zombies.add(zombie);
+        }
+    }
+
+    public void removeZombie(Zombie zombie) {
+        zombies.remove(zombie);
     }
 }

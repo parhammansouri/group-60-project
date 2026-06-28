@@ -15,35 +15,29 @@ public abstract class Plant extends BoardEntity {
     protected int level;
 
     public String getName() {
-        // TODO: Implementation
         return name;
     }
 
     public int getSunCost() {
-        // TODO: Implementation
         return sunCost;
     }
 
     public int getRechargeTime() {
-        // TODO: Implementation
         return rechargeTime;
     }
 
     public int getTimeUntilReady() {
-        // TODO: Implementation - Returns max(0, rechargeTime - timeSinceLastPlacement)
-        return 0;
+        return Math.max(0, rechargeTime - timeSinceLastPlacement);
     }
 
     /**
      * Check if this plant is ready to be placed
      */
     public boolean isReady() {
-        // TODO: Implementation
-        return false;
+        return getTimeUntilReady() == 0;
     }
 
     public int getLevel() {
-        // TODO: Implementation
         return level;
     }
 
@@ -51,14 +45,16 @@ public abstract class Plant extends BoardEntity {
      * Upgrade this plant to the next level
      */
     public void upgrade() {
-        // TODO: Implementation - Requires coins and seed packets
+        level++;
+        maxHealth += 20;
+        health = maxHealth;
     }
 
     /**
      * Feed this plant with plant food for bonus effect
      */
     public void feedPlantFood() {
-        // TODO: Implementation - Activate plant's special ability
+        performAbility();
     }
 
     /**
@@ -71,6 +67,6 @@ public abstract class Plant extends BoardEntity {
      */
     @Override
     public void update() {
-        // TODO: Implementation - Increment timer, trigger abilities
+        timeSinceLastPlacement++;
     }
 }

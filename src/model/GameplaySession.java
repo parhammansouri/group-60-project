@@ -2,6 +2,11 @@ package model;
 
 import model.entity.plant.Plant;
 import model.entity.zombie.Zombie;
+import model.enums.TileType;
+import model.factory.PlantFactory;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -24,24 +29,45 @@ public class GameplaySession {
     private int gems;
     private int playerScore;
     private boolean[] lawnMowersUsed;
+    private int nextSpawnRow;
+    private boolean lost;
+
+    public GameplaySession() {
+        this(null, new Level(), List.of(PlantFactory.create("basic")));
+    }
+
+    public GameplaySession(Chapter chapter, Level level, List<Plant> selectedPlants) {
+        this.chapter = chapter;
+        this.level = level == null ? new Level() : level;
+        this.board = createBoard(this.level.getRows(), this.level.getCols());
+        this.currentWave = new Wave(1, this.level.getWaveCost(1));
+        this.totalWaves = this.level.getNumWaves();
+        this.tickCount = 0;
+        this.sunAmount = 150;
+        this.plantFoodCount = 0;
+        this.selectedPlants = new ArrayList<>(selectedPlants);
+        this.activeZombies = new ArrayList<>();
+        this.coins = 0;
+        this.gems = 0;
+        this.playerScore = 0;
+        this.lawnMowersUsed = new boolean[this.level.getRows()];
+        this.nextSpawnRow = 0;
+        this.lost = false;
+    }
 
     public Chapter getChapter() {
-        // TODO: Implementation
         return chapter;
     }
 
     public Level getLevel() {
-        // TODO: Implementation
         return level;
     }
 
     public Tile[][] getBoard() {
-        // TODO: Implementation
         return board;
     }
 
     public Wave getCurrentWave() {
-        // TODO: Implementation
         return currentWave;
     }
 
@@ -49,24 +75,27 @@ public class GameplaySession {
      * Progress to next wave
      */
     public void nextWave() {
-        // TODO: Implementation
+        int nextWaveNumber = currentWave.getWaveNumber() + 1;
+        if (nextWaveNumber <= totalWaves) {
+            currentWave = new Wave(nextWaveNumber, level.getWaveCost(nextWaveNumber));
+            spawnWave();
+        } else {
+            currentWave = new Wave(totalWaves + 1, 0);
+        }
     }
 
     /**
      * Check if all waves are complete
      */
     public boolean isComplete() {
-        // TODO: Implementation
         return currentWave.getWaveNumber() > totalWaves;
     }
 
     public int getTotalWaves() {
-        // TODO: Implementation
         return totalWaves;
     }
 
     public boolean isFinalWave() {
-        // TODO: Implementation
         return currentWave.getWaveNumber() == totalWaves;
     }
 
@@ -74,12 +103,10 @@ public class GameplaySession {
      * Check if wave should progress to next
      */
     public boolean shouldProgressToNextWave(int totalZombieHealthDefeated) {
-        // TODO: Implementation - 75% health destroyed
-        return false;
+        return activeZombies.isEmpty() || totalZombieHealthDefeated >= currentWave.getWaveCost() * 7;
     }
 
     public int getTickCount() {
-        // TODO: Implementation
         return tickCount;
     }
 
@@ -87,25 +114,40 @@ public class GameplaySession {
      * Advance game time by specified ticks
      */
     public void advanceTime(int ticks) {
-        // TODO: Implementation - Update all entities, spawn zombies, etc.
+        for (int i = 0; i < ticks && !hasWon() && !hasLost(); i++) {
+            tickCount++;
+            currentWave.update();
+            if (tickCount == 1 || tickCount % 5 == 0) {
+                spawnWave();
+            }
+            plantsAttack();
+            moveAndAttackZombies();
+            cleanupDeadZombies();
+            if (activeZombies.isEmpty() && currentWave.getWaveNumber() <= totalWaves && tickCount > 1) {
+                nextWave();
+            }
+        }
     }
 
     public int getSunAmount() {
-        // TODO: Implementation
         return sunAmount;
     }
 
     public void addSun(int amount) {
-        // TODO: Implementation
+        if (amount > 0) {
+            sunAmount += amount;
+        }
     }
 
     public boolean removeSun(int amount) {
-        // TODO: Implementation
-        return false;
+        if (amount < 0 || sunAmount < amount) {
+            return false;
+        }
+        sunAmount -= amount;
+        return true;
     }
 
     public int getPlantFoodCount() {
-        // TODO: Implementation
         return plantFoodCount;
     }
 
@@ -113,24 +155,28 @@ public class GameplaySession {
      * Add plant food to inventory
      */
     public void addPlantFood(int amount) {
-        // TODO: Implementation - Max 3
+        if (amount > 0) {
+            plantFoodCount = Math.min(3, plantFoodCount + amount);
+        }
     }
 
     /**
      * Use plant food on a plant
      */
     public boolean usePlantFood(int x, int y) {
-        // TODO: Implementation
-        return false;
+        if (!isInsideBoard(x, y) || plantFoodCount <= 0 || board[y][x].getPlant() == null) {
+            return false;
+        }
+        board[y][x].getPlant().feedPlantFood();
+        plantFoodCount--;
+        return true;
     }
 
     public List<Plant> getSelectedPlants() {
-        // TODO: Implementation
         return selectedPlants;
     }
 
     public List<Zombie> getActiveZombies() {
-        // TODO: Implementation
         return activeZombies;
     }
 
@@ -138,48 +184,191 @@ public class GameplaySession {
      * Plant a plant at the specified location
      */
     public boolean plantAt(Plant plant, int x, int y) {
-        // TODO: Implementation - Check costs, cooldowns, position validity
-        return false;
+        if (plant == null || !isInsideBoard(x, y) || !board[y][x].canPlacePlant()) {
+            return false;
+        }
+        if (!removeSun(plant.getSunCost())) {
+            return false;
+        }
+        board[y][x].setPlant(plant);
+        if (!selectedPlants.contains(plant)) {
+            selectedPlants.add(plant);
+        }
+        return true;
     }
 
     /**
      * Pluck/remove a plant at the specified location
      */
     public boolean pluckAt(int x, int y) {
-        // TODO: Implementation
-        return false;
+        if (!isInsideBoard(x, y) || board[y][x].getPlant() == null) {
+            return false;
+        }
+        board[y][x].removePlant();
+        return true;
     }
 
     /**
      * Collect sun from the specified location
      */
     public boolean collectSun(int x, int y) {
-        // TODO: Implementation
-        return false;
+        if (!isInsideBoard(x, y)) {
+            return false;
+        }
+        addSun(25);
+        return true;
     }
 
     /**
      * Check if the player has won
      */
     public boolean hasWon() {
-        // TODO: Implementation - All waves completed and all zombies dead
-        return false;
+        return isComplete() && activeZombies.isEmpty() && !lost;
     }
 
     /**
      * Check if the player has lost
      */
     public boolean hasLost() {
-        // TODO: Implementation - Lawn mower triggered a second time or zombie reached
-        // end
-        return false;
+        return lost;
     }
 
     /**
      * Get the session state as a string representation
      */
     public String getSessionState() {
-        // TODO: Implementation - Return formatted board state for display
-        return "";
+        StringBuilder builder = new StringBuilder();
+        builder.append("tick=").append(tickCount)
+                .append(" wave=").append(Math.min(currentWave.getWaveNumber(), totalWaves)).append("/").append(totalWaves)
+                .append(" sun=").append(sunAmount)
+                .append(" plantFood=").append(plantFoodCount)
+                .append(" zombies=").append(activeZombies.size())
+                .append(System.lineSeparator());
+        for (int y = 0; y < board.length; y++) {
+            builder.append(y + 1).append(" ");
+            for (int x = 0; x < board[y].length; x++) {
+                boolean hasPlant = board[y][x].getPlant() != null;
+                boolean hasZombie = !board[y][x].getZombies().isEmpty();
+                if (hasPlant && hasZombie) {
+                    builder.append("X");
+                } else if (hasPlant) {
+                    builder.append("P");
+                } else if (hasZombie) {
+                    builder.append("Z");
+                } else {
+                    builder.append(".");
+                }
+                builder.append(" ");
+            }
+            builder.append(System.lineSeparator());
+        }
+        builder.append("  1 2 3 4 5 6 7 8 9");
+        if (hasWon()) {
+            builder.append(System.lineSeparator()).append("You won!");
+        } else if (hasLost()) {
+            builder.append(System.lineSeparator()).append("You lost!");
+        }
+        return builder.toString();
+    }
+
+    private Tile[][] createBoard(int rows, int cols) {
+        Tile[][] tiles = new Tile[rows][cols];
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                tiles[y][x] = new Tile(x, y, TileType.GRASS);
+            }
+        }
+        return tiles;
+    }
+
+    private void spawnWave() {
+        List<Zombie> zombies = currentWave.spawnWave();
+        for (Zombie zombie : zombies) {
+            int row = nextSpawnRow % board.length;
+            nextSpawnRow++;
+            int col = board[row].length - 1;
+            board[row][col].addZombie(zombie);
+            activeZombies.add(zombie);
+        }
+    }
+
+    private void plantsAttack() {
+        for (Tile[] row : board) {
+            for (Tile tile : row) {
+                Plant plant = tile.getPlant();
+                if (plant == null) {
+                    continue;
+                }
+                plant.update();
+                Zombie target = firstZombieInRowAtOrAfter(tile.getY(), tile.getX());
+                if (target != null) {
+                    target.takeDamage(20 + plant.getLevel() * 5);
+                }
+            }
+        }
+    }
+
+    private Zombie firstZombieInRowAtOrAfter(int row, int col) {
+        for (int x = col; x < board[row].length; x++) {
+            if (!board[row][x].getZombies().isEmpty()) {
+                return board[row][x].getZombies().get(0);
+            }
+        }
+        return null;
+    }
+
+    private void moveAndAttackZombies() {
+        List<Zombie> snapshot = new ArrayList<>(activeZombies);
+        for (Zombie zombie : snapshot) {
+            if (!zombie.isAlive()) {
+                continue;
+            }
+            int oldX = zombie.getX();
+            int y = zombie.getY();
+            if (!isInsideBoard(oldX, y)) {
+                lost = true;
+                continue;
+            }
+            Plant plant = board[y][oldX].getPlant();
+            if (plant != null) {
+                plant.takeDamage(zombie.getDamage());
+                if (!plant.isAlive()) {
+                    board[y][oldX].removePlant();
+                }
+                continue;
+            }
+            board[y][oldX].removeZombie(zombie);
+            zombie.update();
+            if (zombie.getX() < 0) {
+                if (lawnMowersUsed[y]) {
+                    lost = true;
+                } else {
+                    lawnMowersUsed[y] = true;
+                    activeZombies.remove(zombie);
+                }
+            } else {
+                board[y][zombie.getX()].addZombie(zombie);
+            }
+        }
+    }
+
+    private void cleanupDeadZombies() {
+        Iterator<Zombie> iterator = activeZombies.iterator();
+        while (iterator.hasNext()) {
+            Zombie zombie = iterator.next();
+            if (zombie.isAlive()) {
+                continue;
+            }
+            if (isInsideBoard(zombie.getX(), zombie.getY())) {
+                board[zombie.getY()][zombie.getX()].removeZombie(zombie);
+            }
+            iterator.remove();
+            coins += 5;
+            playerScore += 10;
+        }
+    }
+
+    private boolean isInsideBoard(int x, int y) {
+        return y >= 0 && y < board.length && x >= 0 && x < board[y].length;
     }
 }

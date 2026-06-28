@@ -14,6 +14,8 @@ public class BasicPlant extends Plant {
         this.rechargeTime = rechargeTime;
         this.timeSinceLastPlacement = rechargeTime;
         this.level = 1;
+        this.maxHealth = 100;
+        this.health = maxHealth;
     }
 
     @Override
@@ -23,7 +25,6 @@ public class BasicPlant extends Plant {
 
     @Override
     public void update() {
-        // Increment timer so ready state can change
-        this.timeSinceLastPlacement++;
+        super.update();
     }
 }

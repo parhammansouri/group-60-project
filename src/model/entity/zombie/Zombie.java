@@ -18,32 +18,26 @@ public abstract class Zombie extends BoardEntity {
     protected List<Armor> armor;
 
     public String getType() {
-        // TODO: Implementation
         return type;
     }
 
     public float getSpeed() {
-        // TODO: Implementation
         return speed;
     }
 
     public int getDamage() {
-        // TODO: Implementation
         return damage;
     }
 
     public int getCostToSpawn() {
-        // TODO: Implementation
         return costToSpawn;
     }
 
     public boolean isGlowing() {
-        // TODO: Implementation
         return isGlowing;
     }
 
     public List<Armor> getArmor() {
-        // TODO: Implementation
         return armor;
     }
 
@@ -51,21 +45,23 @@ public abstract class Zombie extends BoardEntity {
      * Remove armor from this zombie
      */
     public void removeArmor(Armor armor) {
-        // TODO: Implementation
+        if (this.armor != null) {
+            this.armor.remove(armor);
+        }
     }
 
     /**
      * Make this zombie move towards the player's house
      */
     public void moveForward() {
-        // TODO: Implementation - Decrement x position
+        x -= Math.max(1, Math.round(speed));
     }
 
     /**
      * Attack a plant at the given position
      */
     public void attackPlant() {
-        // TODO: Implementation
+        // Board-level combat is handled by GameplaySession.
     }
 
     /**
@@ -78,6 +74,6 @@ public abstract class Zombie extends BoardEntity {
      */
     @Override
     public void update() {
-        // TODO: Implementation - Move, attack, apply effects
+        moveForward();
     }
 }

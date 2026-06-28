@@ -11,26 +11,23 @@ public abstract class BoardEntity {
     protected int maxHealth;
 
     public int getX() {
-        // TODO: Implementation
         return x;
     }
 
     public int getY() {
-        // TODO: Implementation
         return y;
     }
 
     public void setPosition(int x, int y) {
-        // TODO: Implementation
+        this.x = x;
+        this.y = y;
     }
 
     public int getHealth() {
-        // TODO: Implementation
         return health;
     }
 
     public int getMaxHealth() {
-        // TODO: Implementation
         return maxHealth;
     }
 
@@ -38,14 +35,15 @@ public abstract class BoardEntity {
      * Apply damage to this entity
      */
     public void takeDamage(int damage) {
-        // TODO: Implementation
+        if (damage > 0) {
+            health = Math.max(0, health - damage);
+        }
     }
 
     /**
      * Check if this entity is still alive
      */
     public boolean isAlive() {
-        // TODO: Implementation
         return health > 0;
     }
 
