@@ -2,7 +2,7 @@ package model.special;
 
 import model.Level;
 
-/** Minimal Save Our Seeds mechanic placeholder. */
+/** Save Our Seeds objective tracker. */
 public class SaveOurSeedsMechanic extends NoopMechanic {
     private int savedSeeds;
 

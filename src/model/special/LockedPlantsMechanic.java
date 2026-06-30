@@ -2,7 +2,7 @@ package model.special;
 
 import model.Level;
 
-/** Minimal locked-plants mechanic placeholder. */
+/** Locked-plants restriction tracker. */
 public class LockedPlantsMechanic extends NoopMechanic {
     private boolean locked;
 

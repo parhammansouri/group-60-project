@@ -29,7 +29,7 @@ public class BasicZombie extends Zombie {
 
     @Override
     public void performSpecialAbility() {
-        // Minimal placeholder: no special ability for basic zombie
+        isGlowing = true;
     }
 
     @Override

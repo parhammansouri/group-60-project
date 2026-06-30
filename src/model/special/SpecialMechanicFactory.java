@@ -5,7 +5,7 @@ import model.enums.LevelType;
 
 /**
  * Factory that returns a `SpecialMechanic` implementation for a given
- * `LevelType`. Keeps implementations small and placeholder-like so core
+ * `LevelType`. Keeps implementations isolated so core
  * game code doesn't need to change.
  */
 public class SpecialMechanicFactory {

@@ -2,7 +2,7 @@ package model.special;
 
 import model.Level;
 
-/** Minimal Love Your Plants mechanic placeholder. */
+/** Love Your Plants healing-pulse tracker. */
 public class LoveYourPlantsMechanic extends NoopMechanic {
     private int healingPulseCount;
 

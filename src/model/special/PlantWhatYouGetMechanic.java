@@ -2,7 +2,7 @@ package model.special;
 
 import model.Level;
 
-/** Minimal Plant What You Get mechanic placeholder. */
+/** Plant What You Get random-grant tracker. */
 public class PlantWhatYouGetMechanic extends NoopMechanic {
     private int randomPlantGrants;
 

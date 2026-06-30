@@ -2,7 +2,7 @@ package model.special;
 
 import model.Level;
 
-/** Minimal Dead Line mechanic placeholder. */
+/** Dead Line lane-limit tracker. */
 public class DeadLineMechanic extends NoopMechanic {
     private int deadlineColumn;
 

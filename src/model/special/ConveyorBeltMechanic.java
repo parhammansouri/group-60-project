@@ -2,7 +2,7 @@ package model.special;
 
 import model.Level;
 
-/** Minimal conveyor-belt mechanic placeholder. */
+/** Conveyor-belt supply tracker. */
 public class ConveyorBeltMechanic extends NoopMechanic {
     private int queuedPlants;
 

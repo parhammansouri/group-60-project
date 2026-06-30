@@ -20,7 +20,7 @@ public class BasicPlant extends Plant {
 
     @Override
     public void performAbility() {
-        // Minimal placeholder ability
+        timeSinceLastPlacement = Math.max(timeSinceLastPlacement, rechargeTime);
     }
 
     @Override

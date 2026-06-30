@@ -2,7 +2,7 @@ package model.special;
 
 import model.Level;
 
-/** Minimal Timed War mechanic placeholder. */
+/** Timed War countdown tracker. */
 public class TimedWarMechanic extends NoopMechanic {
     private int remainingTicks;
 

@@ -2,7 +2,7 @@ package model.special;
 
 import model.Level;
 
-/** Minimal Night Ops mechanic placeholder. */
+/** Night Ops visibility tracker. */
 public class NightOpsMechanic extends NoopMechanic {
     private int visibilityRange;
 

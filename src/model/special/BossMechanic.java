@@ -2,7 +2,7 @@ package model.special;
 
 import model.Level;
 
-/** Minimal Boss mechanic placeholder. */
+/** Boss-level state tracker. */
 public class BossMechanic extends NoopMechanic {
     private int bossHealth;
 
