@@ -10,18 +10,21 @@ public class Armor {
     private int health;
     private int maxHealth;
 
+    public Armor(String type, int maxHealth) {
+        this.type = type == null ? "armor" : type;
+        this.maxHealth = Math.max(1, maxHealth);
+        this.health = this.maxHealth;
+    }
+
     public String getType() {
-        // TODO: Implementation
         return type;
     }
 
     public int getHealth() {
-        // TODO: Implementation
         return health;
     }
 
     public int getMaxHealth() {
-        // TODO: Implementation
         return maxHealth;
     }
 
@@ -29,14 +32,15 @@ public class Armor {
      * Apply damage to this armor piece
      */
     public void takeDamage(int damage) {
-        // TODO: Implementation
+        if (damage > 0) {
+            health = Math.max(0, health - damage);
+        }
     }
 
     /**
      * Check if this armor piece is destroyed
      */
     public boolean isDestroyed() {
-        // TODO: Implementation
         return health <= 0;
     }
 }

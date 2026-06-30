@@ -14,7 +14,9 @@ public class ZombieFactory {
             case "fast":
                 return new BasicZombie("Fast Zombie", 2.0f, 3, 8);
             case "tank":
-                return new BasicZombie("Tank Zombie", 0.6f, 8, 20);
+                BasicZombie tank = new BasicZombie("Tank Zombie", 0.6f, 8, 20);
+                tank.addArmor("bucket", 60);
+                return tank;
             case "basic":
             default:
                 return new BasicZombie();

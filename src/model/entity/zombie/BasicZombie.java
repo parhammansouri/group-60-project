@@ -23,6 +23,10 @@ public class BasicZombie extends Zombie {
         this.health = maxHealth;
     }
 
+    public void addArmor(String armorType, int armorHealth) {
+        armor.add(new Armor(armorType, armorHealth));
+    }
+
     @Override
     public void performSpecialAbility() {
         // Minimal placeholder: no special ability for basic zombie

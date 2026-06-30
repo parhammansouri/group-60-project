@@ -1,6 +1,7 @@
 package model.entity.zombie;
 
 import model.entity.BoardEntity;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -48,6 +49,27 @@ public abstract class Zombie extends BoardEntity {
         if (this.armor != null) {
             this.armor.remove(armor);
         }
+    }
+
+    @Override
+    public void takeDamage(int damage) {
+        if (damage <= 0) {
+            return;
+        }
+        int remainingDamage = damage;
+        if (armor != null) {
+            Iterator<Armor> iterator = armor.iterator();
+            while (iterator.hasNext() && remainingDamage > 0) {
+                Armor piece = iterator.next();
+                int before = piece.getHealth();
+                piece.takeDamage(remainingDamage);
+                remainingDamage = Math.max(0, remainingDamage - before);
+                if (piece.isDestroyed()) {
+                    iterator.remove();
+                }
+            }
+        }
+        super.takeDamage(remainingDamage);
     }
 
     /**
