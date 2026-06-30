@@ -10,24 +10,35 @@ public abstract class Minigame extends GameplaySession {
     protected int difficulty;
     protected int reward;
     protected MinigameType type;
+    protected boolean completed;
+    protected boolean failed;
 
     public Minigame(int difficulty) {
-        // TODO: Implementation - Set up game board with minigame rules
+        super();
+        this.difficulty = Math.max(1, difficulty);
+        this.reward = this.difficulty * 25;
+        this.completed = false;
+        this.failed = false;
     }
 
     public MinigameType getType() {
-        // TODO: Implementation
         return type;
     }
 
     public int getDifficulty() {
-        // TODO: Implementation
         return difficulty;
     }
 
     public int getReward() {
-        // TODO: Implementation
         return reward;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public boolean isFailed() {
+        return failed;
     }
 
     /**
@@ -50,4 +61,3 @@ public abstract class Minigame extends GameplaySession {
      */
     public abstract void reset();
 }
-

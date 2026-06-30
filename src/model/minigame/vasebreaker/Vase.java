@@ -8,6 +8,12 @@ class Vase {
     private Object content;
     private boolean isBroken;
 
+    Vase(String type, Object content) {
+        this.type = type;
+        this.content = content;
+        this.isBroken = false;
+    }
+
     public String getType() {
         return type;
     }
@@ -18,5 +24,9 @@ class Vase {
 
     public boolean isBroken() {
         return isBroken;
+    }
+
+    public void breakOpen() {
+        isBroken = true;
     }
 }

@@ -1,6 +1,7 @@
 package model.minigame.izombie;
 
 import model.minigame.Minigame;
+import model.minigame.MinigameType;
 
 /**
  * I Zombie minigame: Play as zombies attacking plants
@@ -13,33 +14,40 @@ public class IZombie extends Minigame {
 
     public IZombie(int difficulty) {
         super(difficulty);
-        // TODO: Implementation
+        this.type = MinigameType.I_ZOMBIE;
+        reset();
     }
 
     public boolean placeZombie(String zombieType, int x, int y, int cost) {
-        // TODO: Implementation
-        return false;
+        if (cost < 0 || sunAmount < cost || brainCount >= BRAINS_TO_WIN) {
+            return false;
+        }
+        sunAmount -= cost;
+        brainCount++;
+        completed = checkWinCondition();
+        return true;
     }
 
     @Override
     public void initializeBoard() {
-        // TODO: Implementation - Initialize with random plants
+        brainCount = 0;
     }
 
     @Override
     public boolean checkWinCondition() {
-        // TODO: Implementation - All brains eaten (5)
-        return false;
+        return brainCount >= BRAINS_TO_WIN;
     }
 
     @Override
     public boolean checkLoseCondition() {
-        // TODO: Implementation - All zombies dead and no sun left
-        return false;
+        return sunAmount <= 0 && brainCount < BRAINS_TO_WIN;
     }
 
     @Override
     public void reset() {
-        // TODO: Implementation
+        sunAmount = INITIAL_SUN + difficulty * 25;
+        completed = false;
+        failed = false;
+        initializeBoard();
     }
 }

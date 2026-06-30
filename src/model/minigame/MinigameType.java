@@ -3,7 +3,7 @@ package model.minigame;
 /**
  * Enumeration of minigame types
  */
-enum MinigameType {
+public enum MinigameType {
     VASEBREAKER,
     WALLNUT_BOWLING,
     I_ZOMBIE,

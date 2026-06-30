@@ -14,51 +14,57 @@ public class Quest {
     private boolean isCompleted;
     private int progress;
 
+    public Quest(String questId, String title, String description, QuestType type, QuestCondition condition) {
+        this.questId = questId;
+        this.title = title;
+        this.description = description;
+        this.type = type;
+        this.condition = condition;
+        this.isCompleted = false;
+        this.progress = 0;
+    }
+
     public String getQuestId() {
-        // TODO: Implementation
         return questId;
     }
 
     public String getTitle() {
-        // TODO: Implementation
         return title;
     }
 
     public String getDescription() {
-        // TODO: Implementation
         return description;
     }
 
     public QuestType getType() {
-        // TODO: Implementation
         return type;
     }
 
     public QuestCondition getCondition() {
-        // TODO: Implementation
         return condition;
     }
 
     public boolean isCompleted() {
-        // TODO: Implementation
         return isCompleted;
     }
 
     public void markCompleted() {
-        // TODO: Implementation
+        isCompleted = true;
+        progress = condition.getTargetValue();
     }
 
     public int getProgress() {
-        // TODO: Implementation
         return progress;
     }
 
     public void updateProgress(int amount) {
-        // TODO: Implementation
+        if (amount > 0) {
+            progress = Math.min(condition.getTargetValue(), progress + amount);
+        }
     }
 
     public boolean areConditionsMet(User user) {
-        // TODO: Implementation
-        return false;
+        progress = condition.getProgress(user);
+        return condition.isMet(user);
     }
 }
