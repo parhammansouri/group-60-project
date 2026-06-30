@@ -4,6 +4,7 @@ import model.entity.plant.Plant;
 import model.entity.zombie.Zombie;
 import model.enums.TileType;
 import model.factory.PlantFactory;
+import model.sun.SunSystem;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,6 +23,7 @@ public class GameplaySession {
     private int totalWaves;
     private int tickCount;
     private int sunAmount;
+    private SunSystem sunSystem;
     private int plantFoodCount;
     private List<Plant> selectedPlants;
     private List<Zombie> activeZombies;
@@ -44,6 +46,7 @@ public class GameplaySession {
         this.totalWaves = this.level.getNumWaves();
         this.tickCount = 0;
         this.sunAmount = 150;
+        this.sunSystem = new SunSystem(sunAmount);
         this.plantFoodCount = 0;
         this.selectedPlants = new ArrayList<>(selectedPlants);
         this.activeZombies = new ArrayList<>();
@@ -117,6 +120,8 @@ public class GameplaySession {
         for (int i = 0; i < ticks && !hasWon() && !hasLost(); i++) {
             tickCount++;
             currentWave.update();
+            sunSystem.update(tickCount);
+            sunAmount = sunSystem.getTotalSun();
             if (tickCount == 1 || tickCount % 5 == 0) {
                 spawnWave();
             }
@@ -136,14 +141,15 @@ public class GameplaySession {
     public void addSun(int amount) {
         if (amount > 0) {
             sunAmount += amount;
+            sunSystem = new SunSystem(sunAmount);
         }
     }
 
     public boolean removeSun(int amount) {
-        if (amount < 0 || sunAmount < amount) {
+        if (!sunSystem.consumeSun(amount)) {
             return false;
         }
-        sunAmount -= amount;
+        sunAmount = sunSystem.getTotalSun();
         return true;
     }
 
@@ -227,8 +233,9 @@ public class GameplaySession {
         if (!isInsideBoard(x, y)) {
             return false;
         }
-        addSun(25);
-        return true;
+        boolean collected = sunSystem.collectSun(x, y);
+        sunAmount = sunSystem.getTotalSun();
+        return collected;
     }
 
     /**
@@ -253,6 +260,7 @@ public class GameplaySession {
         builder.append("tick=").append(tickCount)
                 .append(" wave=").append(Math.min(currentWave.getWaveNumber(), totalWaves)).append("/").append(totalWaves)
                 .append(" sun=").append(sunAmount)
+                .append(" drops=").append(sunSystem.getDroppingSunCount())
                 .append(" plantFood=").append(plantFoodCount)
                 .append(" zombies=").append(activeZombies.size())
                 .append(System.lineSeparator());
@@ -263,6 +271,8 @@ public class GameplaySession {
                 boolean hasZombie = !board[y][x].getZombies().isEmpty();
                 if (hasPlant && hasZombie) {
                     builder.append("X");
+                } else if (sunSystem.hasSunAt(x, y)) {
+                    builder.append("S");
                 } else if (hasPlant) {
                     builder.append("P");
                 } else if (hasZombie) {

@@ -86,11 +86,12 @@ public class App {
     }
 
     public static void createNewSession(Chapter chapter, Level level, List<Plant> selectedPlants) {
-        Level activeLevel = level == null ? new Level() : level;
+        Chapter activeChapter = chapter == null ? Chapter.createDefault() : chapter;
+        Level activeLevel = level == null ? activeChapter.getLevel(1) : level;
         List<Plant> plants = selectedPlants == null || selectedPlants.isEmpty()
                 ? List.of(PlantFactory.create("basic"), PlantFactory.create("shooter"), PlantFactory.create("slow"))
                 : selectedPlants;
-        currentSession = new GameplaySession(chapter, activeLevel, plants);
+        currentSession = new GameplaySession(activeChapter, activeLevel, plants);
     }
 
     /**

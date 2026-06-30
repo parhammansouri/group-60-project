@@ -16,7 +16,6 @@ public enum ChapterType {
     }
 
     public String getDisplayName() {
-        // TODO: Implementation
         return displayName;
     }
 }

@@ -24,12 +24,10 @@ public enum LevelType {
     }
 
     public String getDisplayName() {
-        // TODO: Implementation
         return displayName;
     }
 
     public boolean isSpecial() {
-        // TODO: Implementation
         return this != REGULAR;
     }
 }

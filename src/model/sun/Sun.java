@@ -11,16 +11,34 @@ class Sun {
     private int ticksSinceSpawn;
 
     public Sun(int x, int y, SunType type) {
-        // TODO: Implementation
+        this.x = x;
+        this.y = y;
+        this.type = type == null ? SunType.NORMAL : type;
+        this.value = this.type.getValue();
+        this.ticksSinceSpawn = 0;
     }
 
     public boolean canCollect() {
-        // TODO: Implementation
-        return false;
+        return ticksSinceSpawn < 30;
     }
 
     public int getValue() {
-        // TODO: Implementation
         return value;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public SunType getType() {
+        return type;
+    }
+
+    public void update() {
+        ticksSinceSpawn++;
     }
 }

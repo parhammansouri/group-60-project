@@ -1,7 +1,10 @@
 package model;
 
 import model.enums.ChapterType;
+import model.enums.LevelType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -16,28 +19,46 @@ public class Chapter {
     private List<Level> levels;
     private boolean isUnlocked;
 
+    public Chapter(int chapterNumber, ChapterType type, boolean unlocked) {
+        this.chapterNumber = chapterNumber;
+        this.type = type == null ? ChapterType.ANCIENT_EGYPT : type;
+        this.name = this.type.getDisplayName();
+        this.isUnlocked = unlocked;
+        this.levels = new ArrayList<>();
+        for (int i = 1; i <= 4; i++) {
+            LevelType levelType = i == 4 ? LevelType.BOSS : LevelType.REGULAR;
+            levels.add(new Level(i, chapterNumber, levelType,
+                    Arrays.asList(10 + i * 3, 18 + i * 4, 28 + i * 5),
+                    75 + i * 25, i == 4 ? 2 : 1, i, 5, 9));
+        }
+    }
+
+    public static Chapter createDefault() {
+        return new Chapter(1, ChapterType.ANCIENT_EGYPT, true);
+    }
+
     public String getName() {
-        // TODO: Implementation
         return name;
     }
 
     public int getChapterNumber() {
-        // TODO: Implementation
         return chapterNumber;
     }
 
     public ChapterType getType() {
-        // TODO: Implementation
         return type;
     }
 
     public List<Level> getLevels() {
-        // TODO: Implementation
         return levels;
     }
 
     public Level getLevel(int levelNumber) {
-        // TODO: Implementation
+        for (Level level : levels) {
+            if (level.getLevelNumber() == levelNumber) {
+                return level;
+            }
+        }
         return null;
     }
 
@@ -45,7 +66,6 @@ public class Chapter {
      * Check if this chapter is unlocked for the user
      */
     public boolean isUnlocked() {
-        // TODO: Implementation
         return isUnlocked;
     }
 
@@ -53,6 +73,6 @@ public class Chapter {
      * Unlock this chapter
      */
     public void unlock() {
-        // TODO: Implementation
+        isUnlocked = true;
     }
 }
