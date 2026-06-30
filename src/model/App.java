@@ -27,7 +27,6 @@ public class App {
     private static final Map<String, User> users = new HashMap<>();
 
     public static User getLoggedInUser() {
-        // TODO: Implementation
         return loggedInUser;
     }
 
@@ -36,7 +35,6 @@ public class App {
     }
 
     public static boolean isUserLoggedIn() {
-        // TODO: Implementation
         return loggedInUser != null;
     }
 
@@ -46,7 +44,6 @@ public class App {
     }
 
     public static Menu getCurrentMenu() {
-        // TODO: Implementation
         return currentMenu;
     }
 

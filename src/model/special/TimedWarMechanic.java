@@ -4,11 +4,22 @@ import model.Level;
 
 /** Minimal Timed War mechanic placeholder. */
 public class TimedWarMechanic extends NoopMechanic {
+    private int remainingTicks;
+
     public TimedWarMechanic(Level level) { super(level); }
 
     @Override
     public void init() {
-        // e.g., start countdown timer
+        super.init();
+        remainingTicks = Math.max(60, level.getNumWaves() * 30);
+    }
+
+    @Override
+    public void onTick() {
+        super.onTick();
+        if (remainingTicks > 0) {
+            remainingTicks--;
+        }
     }
 
     @Override

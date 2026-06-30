@@ -4,11 +4,14 @@ import model.Level;
 
 /** Minimal locked-plants mechanic placeholder. */
 public class LockedPlantsMechanic extends NoopMechanic {
+    private boolean locked;
+
     public LockedPlantsMechanic(Level level) { super(level); }
 
     @Override
     public void init() {
-        // In full implementation: mark certain plants as unavailable
+        super.init();
+        locked = true;
     }
 
     @Override

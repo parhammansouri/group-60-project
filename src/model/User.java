@@ -1,6 +1,7 @@
 package model;
 
 import model.entity.plant.Plant;
+import model.factory.PlantFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -39,11 +40,6 @@ public class User {
 
     private List<Plant> unlockedPlants;
     private List<String> unlockedPlantTypes;
-
-    // TODO: Add collection of unlocked plants
-    // TODO: Add collection of seen zombies
-    // TODO: Add progress tracking data
-    // TODO: Add quest completion tracking
 
     public User(String username, String password, String email, String nickname) {
         if (username == null || !username.matches("[A-Za-z0-9_]{3,30}")) {
@@ -226,7 +222,7 @@ public class User {
     }
 
     public void unlockPlant() {
-        // TODO: Implementation
+        unlockPlant("basic");
     }
 
     public List<String> getUnlockedPlantTypes() {
@@ -243,6 +239,7 @@ public class User {
             return false;
         }
         unlockedPlantTypes.add(normalized);
+        unlockedPlants.add(PlantFactory.create(normalized));
         return true;
     }
 
@@ -320,8 +317,10 @@ public class User {
         user.setDifficultyLevel(Integer.parseInt(fields[8]));
         user.stayLoggedIn = Boolean.parseBoolean(fields[9]);
         user.unlockedPlantTypes.clear();
-        if (fields.length == 11 && !decode(fields[10]).isBlank()) {
-            for (String plantType : decode(fields[10]).split(",")) {
+        user.unlockedPlants.clear();
+        String storedPlantTypes = fields.length >= 11 ? decode(fields[10]) : "";
+        if (!storedPlantTypes.isBlank()) {
+            for (String plantType : storedPlantTypes.split(",")) {
                 user.unlockPlant(plantType);
             }
         } else {
