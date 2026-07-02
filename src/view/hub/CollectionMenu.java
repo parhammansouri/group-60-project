@@ -15,6 +15,8 @@ import view.AppMenu;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CollectionMenu implements AppMenu {
     private final Shop shop = new Shop();
@@ -67,8 +69,12 @@ public class CollectionMenu implements AppMenu {
             buyOfficial(user, parseFlags(parts));
         } else if (parts.length == 2 && parts[0].equals("buy")) {
             buy(user, parts[1]);
-        } else if (input.equals("greenhouse")) {
+        } else if (input.equals("greenhouse") || input.equals("show greenhouse")) {
             System.out.println(greenhouse.getStatus());
+        } else if (input.startsWith("plant pot at")) {
+            growOfficial(user, input);
+        } else if (input.startsWith("unlock pot at")) {
+            unlockPot(user, input);
         } else if (parts.length == 3 && parts[0].equals("grow")) {
             grow(user, parts[1], parts[2]);
         } else if (parts.length == 3 && parts[0].equals("boost")) {
@@ -227,6 +233,32 @@ public class CollectionMenu implements AppMenu {
         }
     }
 
+    private void growOfficial(User user, String input) {
+        int[] location = parseLocation(input);
+        if (location == null) {
+            System.out.println("usage: plant pot at (<x>, <y>)");
+            return;
+        }
+        grow(user, Integer.toString(location[1]), Integer.toString(location[0]));
+    }
+
+    private void unlockPot(User user, String input) {
+        int[] location = parseLocation(input);
+        if (location == null) {
+            System.out.println("usage: unlock pot at (<x>, <y>)");
+            return;
+        }
+        int x = location[0] - 1;
+        int y = location[1] - 1;
+        if (greenhouse.unlockPot(x, y, user.getCoins()) && user.removeCoins(2000)) {
+            saveGreenhouse(user);
+            System.out.println("pot unlocked");
+        } else {
+            System.out.println("could not unlock pot");
+        }
+        System.out.println(greenhouse.getStatus());
+    }
+
     private void boost(User user, String rowText, String colText) {
         try {
             int row = Integer.parseInt(rowText) - 1;
@@ -278,5 +310,15 @@ public class CollectionMenu implements AppMenu {
             }
         }
         return flags;
+    }
+
+    private int[] parseLocation(String input) {
+        Matcher matcher = Pattern.compile("-?\\d+").matcher(input);
+        int[] values = new int[2];
+        int count = 0;
+        while (matcher.find() && count < 2) {
+            values[count++] = Integer.parseInt(matcher.group());
+        }
+        return count == 2 ? values : null;
     }
 }

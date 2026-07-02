@@ -28,8 +28,8 @@ shop buy -i seed_slow -n 1
 add plant -t shooter
 remove plant -t basic
 boost plant -t shooter
-greenhouse
-grow 1 1
+show greenhouse
+plant pot at (1, 1)
 boost 1 1
 back
 menu enter game

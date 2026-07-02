@@ -123,6 +123,9 @@ add plant -t <type>
 remove plant -t <type>
 boost plant -t <type>
 greenhouse
+show greenhouse
+plant pot at (<x>, <y>)
+unlock pot at (<x>, <y>)
 grow <row> <col>
 boost <row> <col>
 harvest <row> <col>
@@ -185,8 +188,8 @@ shop buy -i seed_slow -n 1
 add plant -t shooter
 remove plant -t basic
 boost plant -t shooter
-greenhouse
-grow 1 1
+show greenhouse
+plant pot at (1, 1)
 boost 1 1
 back
 menu enter game
