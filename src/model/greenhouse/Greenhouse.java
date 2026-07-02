@@ -127,6 +127,51 @@ public class Greenhouse {
         return builder.toString();
     }
 
+    public String serialize() {
+        update();
+        StringBuilder builder = new StringBuilder();
+        for (int y = 0; y < ROWS; y++) {
+            for (int x = 0; x < COLS; x++) {
+                GreenhousePot pot = pots[y][x];
+                if (builder.length() > 0) {
+                    builder.append(";");
+                }
+                builder.append(x).append(",")
+                        .append(y).append(",")
+                        .append(pot.isUnlocked()).append(",")
+                        .append(pot.getPlantType() == null ? "" : pot.getPlantType()).append(",")
+                        .append(pot.getTimeRemaining());
+            }
+        }
+        return builder.toString();
+    }
+
+    public void restore(String state) {
+        if (state == null || state.isBlank()) {
+            return;
+        }
+        for (String record : state.split(";")) {
+            String[] fields = record.split(",", -1);
+            if (fields.length != 5) {
+                continue;
+            }
+            try {
+                int x = Integer.parseInt(fields[0]);
+                int y = Integer.parseInt(fields[1]);
+                if (!isInside(x, y)) {
+                    continue;
+                }
+                boolean unlocked = Boolean.parseBoolean(fields[2]);
+                String plantType = fields[3];
+                long remainingSeconds = Long.parseLong(fields[4]);
+                pots[y][x].restore(unlocked, plantType, remainingSeconds);
+                unlockedPots.put(potId(x, y), unlocked ? 1 : 0);
+            } catch (NumberFormatException exception) {
+                // Ignore malformed runtime data and keep the default pot state.
+            }
+        }
+    }
+
     private boolean isInside(int x, int y) {
         return x >= 0 && x < COLS && y >= 0 && y < ROWS;
     }

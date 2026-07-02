@@ -38,6 +38,8 @@ public class User {
     private int minigamesCompleted;
     private int questsCompleted;
     private List<String> seenNewsIds;
+    private String greenhouseState;
+    private List<String> completedQuestIds;
 
     private List<Plant> unlockedPlants;
     private List<String> unlockedPlantTypes;
@@ -64,6 +66,8 @@ public class User {
         this.minigamesCompleted = 0;
         this.questsCompleted = 0;
         this.seenNewsIds = new ArrayList<>();
+        this.greenhouseState = "";
+        this.completedQuestIds = new ArrayList<>();
         unlockPlant("basic");
     }
 
@@ -299,6 +303,30 @@ public class User {
         questsCompleted++;
     }
 
+    public String getGreenhouseState() {
+        return greenhouseState;
+    }
+
+    public void setGreenhouseState(String greenhouseState) {
+        this.greenhouseState = greenhouseState == null ? "" : greenhouseState;
+    }
+
+    public boolean hasCompletedQuest(String questId) {
+        return completedQuestIds.contains(questId);
+    }
+
+    public List<String> getCompletedQuestIds() {
+        return completedQuestIds;
+    }
+
+    public void completeQuest(String questId) {
+        if (questId == null || questId.isBlank() || completedQuestIds.contains(questId)) {
+            return;
+        }
+        completedQuestIds.add(questId);
+        addQuestCompletion();
+    }
+
     public String toStorageRecord() {
         return String.join("\t",
                 encode(username),
@@ -317,12 +345,15 @@ public class User {
                 Integer.toString(maxLevel),
                 Integer.toString(minigamesCompleted),
                 Integer.toString(questsCompleted),
-                encode(String.join(",", seenNewsIds)));
+                encode(String.join(",", seenNewsIds)),
+                encode(greenhouseState),
+                encode(String.join(",", completedQuestIds)));
     }
 
     public static User fromStorageRecord(String record) {
         String[] fields = record.split("\t", -1);
-        if (fields.length != 10 && fields.length != 11 && fields.length != 16 && fields.length != 17) {
+        if (fields.length != 10 && fields.length != 11 && fields.length != 16
+                && fields.length != 17 && fields.length != 19) {
             throw new IllegalArgumentException("invalid user record");
         }
 
@@ -351,11 +382,20 @@ public class User {
             user.minigamesCompleted = Integer.parseInt(fields[14]);
             user.questsCompleted = Integer.parseInt(fields[15]);
         }
-        if (fields.length == 17 && !decode(fields[16]).isBlank()) {
+        if (fields.length >= 17 && !decode(fields[16]).isBlank()) {
             user.seenNewsIds.clear();
             for (String newsId : decode(fields[16]).split(",")) {
                 if (!newsId.isBlank()) {
                     user.seenNewsIds.add(newsId);
+                }
+            }
+        }
+        if (fields.length >= 19) {
+            user.greenhouseState = decode(fields[17]);
+            user.completedQuestIds.clear();
+            for (String questId : decode(fields[18]).split(",")) {
+                if (!questId.isBlank()) {
+                    user.completedQuestIds.add(questId);
                 }
             }
         }

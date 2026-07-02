@@ -32,6 +32,7 @@ public class CollectionMenu implements AppMenu {
         System.out.println("grow <row> <col> | boost <row> <col> | harvest <row> <col> | back | exit");
         String input = scanner.nextLine().trim();
         String[] parts = input.split("\\s+");
+        greenhouse.restore(user.getGreenhouseState());
 
         if (App.handleGlobalMenuCommand(input)) {
             return;
@@ -59,7 +60,7 @@ public class CollectionMenu implements AppMenu {
         } else if (input.equals("greenhouse")) {
             System.out.println(greenhouse.getStatus());
         } else if (parts.length == 3 && parts[0].equals("grow")) {
-            grow(parts[1], parts[2]);
+            grow(user, parts[1], parts[2]);
         } else if (parts.length == 3 && parts[0].equals("boost")) {
             boost(user, parts[1], parts[2]);
         } else if (parts.length == 3 && parts[0].equals("harvest")) {
@@ -140,11 +141,12 @@ public class CollectionMenu implements AppMenu {
         buy(user, itemId);
     }
 
-    private void grow(String rowText, String colText) {
+    private void grow(User user, String rowText, String colText) {
         try {
             int row = Integer.parseInt(rowText) - 1;
             int col = Integer.parseInt(colText) - 1;
             if (greenhouse.plantInPot(col, row)) {
+                saveGreenhouse(user);
                 System.out.println("plant started growing");
             } else {
                 System.out.println("could not grow plant there");
@@ -160,7 +162,7 @@ public class CollectionMenu implements AppMenu {
             int row = Integer.parseInt(rowText) - 1;
             int col = Integer.parseInt(colText) - 1;
             if (greenhouse.growInstant(col, row, user.getGems()) && user.removeGems(1)) {
-                App.saveGameState();
+                saveGreenhouse(user);
                 System.out.println("plant boosted");
             } else {
                 System.out.println("could not boost plant");
@@ -180,17 +182,22 @@ public class CollectionMenu implements AppMenu {
                 System.out.println("nothing ready to harvest");
             } else if (reward == 50) {
                 user.addCoins(reward);
-                App.saveGameState();
+                saveGreenhouse(user);
                 System.out.println("harvested marigold for 50 coins");
             } else {
                 user.unlockPlant("basic");
-                App.saveGameState();
+                saveGreenhouse(user);
                 System.out.println("harvested seed packet");
             }
             System.out.println(greenhouse.getStatus());
         } catch (NumberFormatException exception) {
             System.out.println("row and col must be numbers");
         }
+    }
+
+    private void saveGreenhouse(User user) {
+        user.setGreenhouseState(greenhouse.serialize());
+        App.saveGameState();
     }
 
     private Map<String, String> parseFlags(String[] parts) {

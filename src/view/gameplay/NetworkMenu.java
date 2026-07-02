@@ -56,12 +56,16 @@ public class NetworkMenu implements AppMenu {
             System.out.println("quest not found");
             return;
         }
+        if (user.hasCompletedQuest(questId)) {
+            System.out.println("quest already completed");
+            return;
+        }
         if (!quest.areConditionsMet(user)) {
             System.out.println("quest is not ready");
             return;
         }
         quest.markCompleted();
-        user.addQuestCompletion();
+        user.completeQuest(questId);
         user.addCoins(25);
         App.saveGameState();
         System.out.println("quest completed: +" + 25 + " coins");

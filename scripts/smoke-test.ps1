@@ -17,6 +17,9 @@ back
 menu enter collection
 menu collection show-plant -p shooter
 buy seed_shooter
+greenhouse
+grow 1 1
+boost 1 1
 back
 menu enter game
 chapters
@@ -41,8 +44,23 @@ back
 exit
 "@
 
+$secondInputText = @"
+login
+login -u testuser -p pass123
+menu enter collection
+greenhouse
+harvest 1 1
+back
+menu enter network
+quests
+claim mini_start
+back
+exit
+"@
+
 $output = $inputText | java -cp out Main
-$outputText = $output -join [Environment]::NewLine
+$secondOutput = $secondInputText | java -cp out Main
+$outputText = ($output + $secondOutput) -join [Environment]::NewLine
 $outputText | Set-Content -Path "smoke-output.txt"
 
 $required = @(
@@ -52,6 +70,8 @@ $required = @(
     "username: testuser",
     "Shooter | sun=50",
     "purchase successful",
+    "plant started growing",
+    "plant boosted",
     "1. Ancient Egypt (unlocked)",
     "2. Regular Level",
     "game started: Ancient Egypt level 2",
@@ -60,7 +80,9 @@ $required = @(
     "minigame completed",
     "quest completed",
     "Welcome: The lawn defense campaign is now active.",
-    "1. TestUser"
+    "1. TestUser",
+    "harvested",
+    "quest already completed"
 )
 
 foreach ($line in $required) {

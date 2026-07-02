@@ -103,6 +103,22 @@ public class GreenhousePot {
         }
     }
 
+    public void restore(boolean unlocked, String plantType, long remainingSeconds) {
+        this.isUnlocked = unlocked;
+        if (plantType == null || plantType.isBlank()) {
+            this.plantType = null;
+            this.plantedTime = null;
+            this.readyTime = null;
+            this.growthPhase = GrowthPhase.SEED;
+            return;
+        }
+        this.plantType = plantType;
+        this.plantedTime = LocalTime.now();
+        this.readyTime = LocalTime.now().plusSeconds(Math.max(0L, remainingSeconds));
+        this.growthPhase = remainingSeconds <= 0 ? GrowthPhase.READY : GrowthPhase.SEED;
+        updateGrowth();
+    }
+
     public String collect() {
         if (!isReady()) {
             return null;

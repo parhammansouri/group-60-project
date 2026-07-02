@@ -35,12 +35,13 @@ public class QuestBook {
     public String getStatus(User user) {
         StringBuilder builder = new StringBuilder();
         for (Quest quest : quests) {
+            boolean completed = user != null && user.hasCompletedQuest(quest.getQuestId());
             boolean ready = quest.areConditionsMet(user);
             builder.append(quest.getQuestId())
                     .append(" | ").append(quest.getTitle())
                     .append(" | ").append(quest.getProgress())
                     .append("/").append(quest.getCondition().getTargetValue())
-                    .append(ready ? " | ready" : " | active")
+                    .append(completed ? " | completed" : ready ? " | ready" : " | active")
                     .append(System.lineSeparator());
         }
         return builder.toString();

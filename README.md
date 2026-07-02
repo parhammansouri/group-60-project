@@ -6,6 +6,7 @@ A command-line Java implementation inspired by Plants vs. Zombies 2 for the Adva
 
 - Account signup, login, logout, profile, and settings
 - Persistent user data in `data/users.tsv`
+- Persistent profile, progress, news, quest, and greenhouse state
 - Password hashing with SHA-256
 - Adventure gameplay loop with board display, plants, zombies, waves, sun drops, lawn mowers, scoring, and rewards
 - Plant collection, shop purchases, and unlockable plants
