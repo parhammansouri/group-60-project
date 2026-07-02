@@ -6,7 +6,6 @@ import model.GameplaySession;
 import model.Level;
 import model.entity.zombie.Zombie;
 import model.enums.Menu;
-import model.factory.PlantFactory;
 import model.factory.ZombieFactory;
 import view.AppMenu;
 
@@ -65,6 +64,8 @@ public class GameplayMenu implements AppMenu {
             addSuns(parts);
         } else if (input.startsWith("cheat spawn-zombie")) {
             spawnZombie(input);
+        } else if (input.equals("cheat remove-cooldown")) {
+            removeCooldowns();
         } else if (input.equals("cheat add-plant-food")) {
             addPlantFood();
         } else if (input.equals("end")) {
@@ -211,7 +212,10 @@ public class GameplayMenu implements AppMenu {
         try {
             int row = Integer.parseInt(parts[2]) - 1;
             int col = Integer.parseInt(parts[3]) - 1;
-            if (session.plantAt(PlantFactory.create(parts[1]), col, row)) {
+            var plant = session.getSelectedPlant(parts[1]);
+            if (plant == null) {
+                System.out.println("plant is not in loadout");
+            } else if (session.plantAt(plant, col, row)) {
                 System.out.println("plant placed");
             } else {
                 System.out.println("could not place plant");
@@ -318,6 +322,14 @@ public class GameplayMenu implements AppMenu {
         if (session != null) {
             session.addPlantFood(1);
             System.out.println("plant food added; you have " + session.getPlantFoodCount());
+        }
+    }
+
+    private void removeCooldowns() {
+        GameplaySession session = requireSession();
+        if (session != null) {
+            session.removePlacementCooldowns();
+            System.out.println("plant cooldowns removed");
         }
     }
 

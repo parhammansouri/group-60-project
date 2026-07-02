@@ -43,6 +43,14 @@ public abstract class Plant extends BoardEntity implements Attacker {
         return getTimeUntilReady() == 0;
     }
 
+    public void resetPlacementCooldown() {
+        timeSinceLastPlacement = 0;
+    }
+
+    public void makePlacementReady() {
+        timeSinceLastPlacement = rechargeTime;
+    }
+
     public int getLevel() {
         return level;
     }

@@ -40,6 +40,9 @@ cheat add -n 25 suns
 zombies info
 cheat spawn-zombie -t tank -l 9, 1
 plant plant -t shooter -l (1, 1)
+plant plant -t shooter -l (2, 1)
+cheat remove-cooldown
+plant plant -t shooter -l (2, 1)
 start zombie waves
 tick 5
 sun 2 7
@@ -106,6 +109,8 @@ $required = @(
     "Tank Zombie",
     "zombie spawned",
     "plant placed",
+    "could not place plant",
+    "plant cooldowns removed",
     "sun collected",
     "minigame completed",
     "quest completed",

@@ -86,6 +86,7 @@ board
 show map
 show sun amount
 cheat add -n <count> suns
+cheat remove-cooldown
 zombies info
 cheat spawn-zombie -t <zombie-type> -l <x, y>
 plant <basic|shooter|slow> <row> <col>
@@ -194,6 +195,9 @@ cheat add -n 25 suns
 zombies info
 cheat spawn-zombie -t tank -l 9, 1
 plant plant -t shooter -l (1, 1)
+plant plant -t shooter -l (2, 1)
+cheat remove-cooldown
+plant plant -t shooter -l (2, 1)
 start zombie waves
 tick 5
 sun 2 7

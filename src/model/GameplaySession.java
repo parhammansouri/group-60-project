@@ -212,6 +212,23 @@ public class GameplaySession {
         return selectedPlants;
     }
 
+    public Plant getSelectedPlant(String type) {
+        String normalized = normalizePlantType(type);
+        for (Plant plant : selectedPlants) {
+            if (normalizePlantType(plant.getName()).equals(normalized)
+                    || normalizePlantType(plant.getName()).contains(normalized)) {
+                return plant;
+            }
+        }
+        return null;
+    }
+
+    public void removePlacementCooldowns() {
+        for (Plant plant : selectedPlants) {
+            plant.makePlacementReady();
+        }
+    }
+
     public List<Zombie> getActiveZombies() {
         return activeZombies;
     }
@@ -233,13 +250,14 @@ public class GameplaySession {
         if (plant == null || !isInsideBoard(x, y) || !board[y][x].canPlacePlant()) {
             return false;
         }
+        if (!plant.isReady()) {
+            return false;
+        }
         if (!removeSun(plant.getSunCost())) {
             return false;
         }
-        board[y][x].setPlant(plant);
-        if (!selectedPlants.contains(plant)) {
-            selectedPlants.add(plant);
-        }
+        board[y][x].setPlant(createBoardPlant(plant));
+        plant.resetPlacementCooldown();
         return true;
     }
 
@@ -450,5 +468,28 @@ public class GameplaySession {
 
     private boolean isInsideBoard(int x, int y) {
         return y >= 0 && y < board.length && x >= 0 && x < board[y].length;
+    }
+
+    private Plant createBoardPlant(Plant template) {
+        Plant plant = PlantFactory.create(typeFromName(template.getName()));
+        for (int level = 1; level < template.getLevel(); level++) {
+            plant.upgrade();
+        }
+        return plant;
+    }
+
+    private String typeFromName(String name) {
+        String normalized = normalizePlantType(name);
+        if (normalized.contains("shooter")) {
+            return "shooter";
+        }
+        if (normalized.contains("slow")) {
+            return "slow";
+        }
+        return "basic";
+    }
+
+    private String normalizePlantType(String plantType) {
+        return plantType == null ? "" : plantType.trim().toLowerCase().replace(" plant", "");
     }
 }
