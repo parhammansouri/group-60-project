@@ -1,18 +1,24 @@
 package model.entity.plant;
 
 import model.entity.BoardEntity;
+import model.entity.Attacker;
+import model.entity.projectile.Projectile;
 
 /**
  * Abstract base class for all plant types in the game.
  * Plants are defensive entities that protect against zombie hordes.
  * Each plant has unique abilities, costs, and recharge times.
  */
-public abstract class Plant extends BoardEntity {
+public abstract class Plant extends BoardEntity implements Attacker {
     protected String name;
     protected int sunCost;
     protected int rechargeTime;
     protected int timeSinceLastPlacement;
     protected int level;
+    protected int attackDamage;
+    protected int attackRange;
+    protected int attackCooldown;
+    protected int ticksSinceLastAttack;
 
     public String getName() {
         return name;
@@ -39,6 +45,31 @@ public abstract class Plant extends BoardEntity {
 
     public int getLevel() {
         return level;
+    }
+
+    @Override
+    public int getAttackDamage() {
+        return attackDamage + level * 5;
+    }
+
+    @Override
+    public int getAttackRange() {
+        return attackRange;
+    }
+
+    @Override
+    public boolean canAttack() {
+        return ticksSinceLastAttack >= attackCooldown;
+    }
+
+    @Override
+    public void attack() {
+        ticksSinceLastAttack = 0;
+    }
+
+    public Projectile createProjectile() {
+        attack();
+        return new Projectile(x + 1, y, 1, getAttackDamage());
     }
 
     /**
@@ -68,5 +99,6 @@ public abstract class Plant extends BoardEntity {
     @Override
     public void update() {
         timeSinceLastPlacement++;
+        ticksSinceLastAttack++;
     }
 }

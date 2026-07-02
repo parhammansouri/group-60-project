@@ -16,6 +16,10 @@ public class BasicPlant extends Plant {
         this.level = 1;
         this.maxHealth = 100;
         this.health = maxHealth;
+        this.attackDamage = "Shooter".equals(name) ? 25 : 15;
+        this.attackRange = 9;
+        this.attackCooldown = "Slow Plant".equals(name) ? 2 : 1;
+        this.ticksSinceLastAttack = attackCooldown;
     }
 
     @Override

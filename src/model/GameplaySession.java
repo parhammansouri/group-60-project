@@ -1,6 +1,7 @@
 package model;
 
 import model.entity.plant.Plant;
+import model.entity.projectile.Projectile;
 import model.entity.zombie.Zombie;
 import model.enums.TileType;
 import model.factory.PlantFactory;
@@ -26,6 +27,7 @@ public class GameplaySession {
     private SunSystem sunSystem;
     private int plantFoodCount;
     private List<Plant> selectedPlants;
+    private List<Projectile> activeProjectiles;
     private List<Zombie> activeZombies;
     private int coins;
     private int gems;
@@ -49,6 +51,7 @@ public class GameplaySession {
         this.sunSystem = new SunSystem(sunAmount);
         this.plantFoodCount = 0;
         this.selectedPlants = new ArrayList<>(selectedPlants);
+        this.activeProjectiles = new ArrayList<>();
         this.activeZombies = new ArrayList<>();
         this.coins = 0;
         this.gems = 0;
@@ -126,6 +129,7 @@ public class GameplaySession {
                 spawnWave();
             }
             plantsAttack();
+            updateProjectiles();
             moveAndAttackZombies();
             cleanupDeadZombies();
             if (activeZombies.isEmpty() && currentWave.getWaveNumber() <= totalWaves && tickCount > 1) {
@@ -262,6 +266,7 @@ public class GameplaySession {
                 .append(" sun=").append(sunAmount)
                 .append(" drops=").append(sunSystem.getDroppingSunCount())
                 .append(" plantFood=").append(plantFoodCount)
+                .append(" projectiles=").append(activeProjectiles.size())
                 .append(" zombies=").append(activeZombies.size())
                 .append(System.lineSeparator());
         for (int y = 0; y < board.length; y++) {
@@ -269,10 +274,13 @@ public class GameplaySession {
             for (int x = 0; x < board[y].length; x++) {
                 boolean hasPlant = board[y][x].getPlant() != null;
                 boolean hasZombie = !board[y][x].getZombies().isEmpty();
+                boolean hasProjectile = hasProjectileAt(x, y);
                 if (hasPlant && hasZombie) {
                     builder.append("X");
                 } else if (sunSystem.hasSunAt(x, y)) {
                     builder.append("S");
+                } else if (hasProjectile) {
+                    builder.append("*");
                 } else if (hasPlant) {
                     builder.append("P");
                 } else if (hasZombie) {
@@ -323,11 +331,36 @@ public class GameplaySession {
                 }
                 plant.update();
                 Zombie target = firstZombieInRowAtOrAfter(tile.getY(), tile.getX());
-                if (target != null) {
-                    target.takeDamage(20 + plant.getLevel() * 5);
+                if (target != null && plant.canAttack()) {
+                    activeProjectiles.add(plant.createProjectile());
                 }
             }
         }
+    }
+
+    private void updateProjectiles() {
+        Iterator<Projectile> iterator = activeProjectiles.iterator();
+        while (iterator.hasNext()) {
+            Projectile projectile = iterator.next();
+            projectile.update();
+            Zombie target = firstZombieInRowAtOrAfter(projectile.getY(), projectile.getX());
+            if (target != null && projectile.isAt(target.getX(), target.getY())) {
+                target.takeDamage(projectile.getDamage());
+                projectile.deactivate();
+            }
+            if (!projectile.isActive() || projectile.getX() >= level.getCols()) {
+                iterator.remove();
+            }
+        }
+    }
+
+    private boolean hasProjectileAt(int x, int y) {
+        for (Projectile projectile : activeProjectiles) {
+            if (projectile.isActive() && projectile.getX() == x && projectile.getY() == y) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Zombie firstZombieInRowAtOrAfter(int row, int col) {
