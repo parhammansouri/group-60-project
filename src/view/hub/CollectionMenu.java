@@ -63,6 +63,8 @@ public class CollectionMenu implements AppMenu {
             removeSelectedPlant(user, parseFlags(parts).get("-t"));
         } else if (input.startsWith("boost plant")) {
             boostSelectedPlant(user, parseFlags(parts).get("-t"));
+        } else if (input.startsWith("shop buy")) {
+            buyOfficial(user, parseFlags(parts));
         } else if (parts.length == 2 && parts[0].equals("buy")) {
             buy(user, parts[1]);
         } else if (input.equals("greenhouse")) {
@@ -143,13 +145,26 @@ public class CollectionMenu implements AppMenu {
     }
 
     private void buy(User user, String itemId) {
-        if (shop.purchaseItem(itemId, 1, null, user)) {
+        buy(user, itemId, 1, null);
+    }
+
+    private void buy(User user, String itemId, int count, String plantType) {
+        if (shop.purchaseItem(itemId, count, plantType, user)) {
             App.saveGameState();
             System.out.println("purchase successful");
         } else {
             System.out.println("purchase failed");
         }
         showPlants(user);
+    }
+
+    private void buyOfficial(User user, Map<String, String> flags) {
+        try {
+            int count = Integer.parseInt(flags.getOrDefault("-n", "1"));
+            buy(user, flags.get("-i"), count, flags.get("-t"));
+        } catch (NumberFormatException exception) {
+            System.out.println("count must be a number");
+        }
     }
 
     private void buyPlant(User user, String plantType) {

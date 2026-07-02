@@ -68,4 +68,11 @@ public class ShopItem {
         }
         return maxCapacity <= 0 || currentCount + quantity <= maxCapacity;
     }
+
+    public boolean canPurchase(User user, int currentCount, int count) {
+        if (count <= 0 || user == null || user.getCoins() < costCoins * count || user.getGems() < costGems * count) {
+            return false;
+        }
+        return maxCapacity <= 0 || currentCount + quantity * count <= maxCapacity;
+    }
 }

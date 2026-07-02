@@ -24,6 +24,7 @@ back
 menu enter collection
 menu collection show-plant -p shooter
 buy seed_shooter
+shop buy -i seed_slow -n 1
 add plant -t shooter
 remove plant -t basic
 boost plant -t shooter
@@ -95,6 +96,7 @@ $required = @(
     "username: testuser",
     "Shooter | sun=50",
     "purchase successful",
+    "unlocked plants: basic, shooter, slow",
     "plant added to loadout",
     "plant removed from loadout",
     "plant boosted to level 2",

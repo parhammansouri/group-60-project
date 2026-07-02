@@ -117,6 +117,7 @@ shop
 shop list
 shop daily
 buy <itemId>
+shop buy -i <item_id> -n <count> [-t <plant_type>]
 menu collection purchase-plant -p <plant_name>
 add plant -t <type>
 remove plant -t <type>
@@ -180,6 +181,7 @@ back
 menu enter collection
 menu collection show-plant -p shooter
 buy seed_shooter
+shop buy -i seed_slow -n 1
 add plant -t shooter
 remove plant -t basic
 boost plant -t shooter

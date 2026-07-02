@@ -56,7 +56,7 @@ public class Shop {
             return false;
         }
         int currentCount = item.getAssociatedPlant() != null && user.hasUnlockedPlant(item.getAssociatedPlant()) ? 1 : 0;
-        if (!item.canPurchase(user, currentCount)) {
+        if (!item.canPurchase(user, currentCount, count)) {
             return false;
         }
         if (!user.removeCoins(item.getCostCoins() * count) || !user.removeGems(item.getCostGems() * count)) {
