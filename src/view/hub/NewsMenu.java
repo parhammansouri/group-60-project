@@ -28,8 +28,10 @@ public class NewsMenu implements AppMenu {
             return;
         }
 
-        if (input.equals("news")) {
+        if (input.equals("news") || input.equals("menu news show-all")) {
             printNews(user);
+        } else if (input.equals("menu news show-unread")) {
+            printUnreadNews(user);
         } else if (parts.length == 2 && parts[0].equals("read")) {
             readNews(user, parts[1]);
         } else if (input.equals("score")) {
@@ -42,6 +44,19 @@ public class NewsMenu implements AppMenu {
             App.setCurrentMenu(Menu.Exit);
         } else {
             System.out.println("invalid command");
+        }
+    }
+
+    private void printUnreadNews(User user) {
+        boolean found = false;
+        for (News news : controller.getNewsItems()) {
+            if (!user.hasSeenNews(news)) {
+                found = true;
+                System.out.println(news.getId() + " | " + news.getTitle() + " | new");
+            }
+        }
+        if (!found) {
+            System.out.println("no unread news");
         }
     }
 

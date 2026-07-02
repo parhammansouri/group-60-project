@@ -11,6 +11,13 @@ register -u testuser -p pass123 pass123 -n TestUser -e test@example.com -g male
 menu show current
 menu logout
 login -u testuser -p pass123 -stay-logged-in
+menu coin-wallet
+menu gem-wallet
+menu cheat add 20 coin
+menu cheat add 2 diamond
+menu enter settings
+menu settings change-difficulty -l 3
+back
 menu enter profile
 menu profile show-info
 back
@@ -26,6 +33,7 @@ chapters
 levels 1
 start 1 2
 show sun amount
+cheat add -n 25 suns
 plant plant -t shooter -l (1, 1)
 tick 6
 sun 2 7
@@ -37,8 +45,9 @@ quests
 claim mini_start
 back
 menu enter news
-news
+menu news show-unread
 read welcome
+menu news show-all
 score
 back
 exit
@@ -67,6 +76,11 @@ $required = @(
     "user registered successfully",
     "current menu: main",
     "logged in successfully",
+    "coins: 100",
+    "diamonds: 3",
+    "coins added: 120",
+    "diamonds added: 5",
+    "difficulty updated",
     "username: testuser",
     "Shooter | sun=50",
     "purchase successful",
@@ -75,6 +89,7 @@ $required = @(
     "1. Ancient Egypt (unlocked)",
     "2. Regular Level",
     "game started: Ancient Egypt level 2",
+    "sun added; you have 175",
     "plant placed",
     "sun collected",
     "minigame completed",

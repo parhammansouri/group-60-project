@@ -71,6 +71,10 @@ public class App {
             System.out.println("logged out");
             return true;
         }
+        if (normalized.startsWith("menu cheat add ")) {
+            handleCurrencyCheat(normalized);
+            return true;
+        }
         if (normalized.equals("menu exit")) {
             exitCurrentMenu();
             return true;
@@ -80,6 +84,39 @@ public class App {
             return true;
         }
         return false;
+    }
+
+    private static void handleCurrencyCheat(String input) {
+        if (loggedInUser == null) {
+            System.out.println("login required");
+            return;
+        }
+        String[] parts = input.split("\\s+");
+        if (parts.length != 5) {
+            System.out.println("usage: menu cheat add <n> <coin|diamond>");
+            return;
+        }
+        try {
+            int amount = Integer.parseInt(parts[3]);
+            if (amount <= 0) {
+                System.out.println("amount must be positive");
+                return;
+            }
+            if ("coin".equals(parts[4]) || "coins".equals(parts[4])) {
+                loggedInUser.addCoins(amount);
+                saveGameState();
+                System.out.println("coins added: " + loggedInUser.getCoins());
+            } else if ("diamond".equals(parts[4]) || "diamonds".equals(parts[4]) || "gem".equals(parts[4])
+                    || "gems".equals(parts[4])) {
+                loggedInUser.addGems(amount);
+                saveGameState();
+                System.out.println("diamonds added: " + loggedInUser.getGems());
+            } else {
+                System.out.println("currency must be coin or diamond");
+            }
+        } catch (NumberFormatException exception) {
+            System.out.println("amount must be a number");
+        }
     }
 
     private static void exitCurrentMenu() {

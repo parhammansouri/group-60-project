@@ -60,6 +60,9 @@ menu show current
 menu enter <menu_name>
 menu exit
 menu logout
+menu coin-wallet
+menu gem-wallet
+menu cheat add <n> <coin|diamond>
 menu profile
 menu settings
 menu collection
@@ -73,6 +76,7 @@ exit
 Gameplay:
 
 ```text
+menu settings change-difficulty -l <difficulty_level>
 chapters
 levels <chapter>
 start
@@ -81,6 +85,7 @@ start <chapter> <level>
 board
 show map
 show sun amount
+cheat add -n <count> suns
 plant <basic|shooter|slow> <row> <col>
 plant plant -t <type> -l (<x>, <y>)
 tick <count>
@@ -128,6 +133,8 @@ News and leaderboard:
 
 ```text
 news
+menu news show-unread
+menu news show-all
 read <id>
 score
 progress
@@ -151,6 +158,13 @@ register -u testuser -p pass123 pass123 -n TestUser -e test@example.com -g male
 menu show current
 menu logout
 login -u testuser -p pass123 -stay-logged-in
+menu coin-wallet
+menu gem-wallet
+menu cheat add 20 coin
+menu cheat add 2 diamond
+menu enter settings
+menu settings change-difficulty -l 3
+back
 menu enter profile
 menu profile show-info
 back
@@ -163,6 +177,7 @@ chapters
 levels 1
 start 1 2
 show sun amount
+cheat add -n 25 suns
 plant plant -t shooter -l (1, 1)
 tick 6
 sun 2 7
@@ -174,8 +189,9 @@ quests
 claim mini_start
 back
 menu enter news
-news
+menu news show-unread
 read welcome
+menu news show-all
 score
 back
 exit

@@ -25,14 +25,10 @@ public class SettingsMenu implements AppMenu {
             return;
         }
 
-        if (parts.length == 2 && parts[0].equals("difficulty")) {
-            try {
-                user.setDifficultyLevel(Integer.parseInt(parts[1]));
-                App.saveGameState();
-                System.out.println("difficulty updated");
-            } catch (IllegalArgumentException exception) {
-                System.out.println(exception.getMessage());
-            }
+        if (input.startsWith("menu settings change-difficulty")) {
+            changeDifficulty(user, valueAfterFlag(input.split("\\s+"), "-l"));
+        } else if (parts.length == 2 && parts[0].equals("difficulty")) {
+            changeDifficulty(user, parts[1]);
         } else if (parts.length == 2 && parts[0].equals("nickname")) {
             updateNickname(user, parts[1]);
         } else if (parts.length == 2 && parts[0].equals("email")) {
@@ -58,6 +54,25 @@ public class SettingsMenu implements AppMenu {
         } else {
             System.out.println("invalid command");
         }
+    }
+
+    private void changeDifficulty(User user, String levelText) {
+        try {
+            user.setDifficultyLevel(Integer.parseInt(levelText));
+            App.saveGameState();
+            System.out.println("difficulty updated");
+        } catch (IllegalArgumentException exception) {
+            System.out.println(exception.getMessage());
+        }
+    }
+
+    private String valueAfterFlag(String[] parts, String flag) {
+        for (int i = 0; i < parts.length - 1; i++) {
+            if (flag.equals(parts[i])) {
+                return parts[i + 1];
+            }
+        }
+        return "";
     }
 
     private void updateNickname(User user, String nickname) {

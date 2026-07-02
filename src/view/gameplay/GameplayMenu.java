@@ -55,6 +55,8 @@ public class GameplayMenu implements AppMenu {
             feedPlant(input);
         } else if (parts.length == 3 && parts[0].equals("pluck")) {
             pluck(parts[1], parts[2]);
+        } else if (input.startsWith("cheat add -n") && input.endsWith("suns")) {
+            addSuns(parts);
         } else if (input.equals("cheat add-plant-food")) {
             addPlantFood();
         } else if (input.equals("end")) {
@@ -292,6 +294,20 @@ public class GameplayMenu implements AppMenu {
         if (session != null) {
             session.addPlantFood(1);
             System.out.println("plant food added; you have " + session.getPlantFoodCount());
+        }
+    }
+
+    private void addSuns(String[] parts) {
+        GameplaySession session = requireSession();
+        if (session == null) {
+            return;
+        }
+        try {
+            int amount = Integer.parseInt(parts[3]);
+            session.addSun(amount);
+            System.out.println("sun added; you have " + session.getSunAmount());
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException exception) {
+            System.out.println("usage: cheat add -n <count> suns");
         }
     }
 

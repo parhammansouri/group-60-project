@@ -1,6 +1,7 @@
 package view.hub;
 
 import model.App;
+import model.User;
 import model.enums.Menu;
 import view.AppMenu;
 
@@ -18,6 +19,10 @@ public class MainMenu implements AppMenu {
 
         if (input.equals("logout")) {
             App.logout();
+        } else if (input.equals("menu coin-wallet")) {
+            printWallet("coins");
+        } else if (input.equals("menu gem-wallet")) {
+            printWallet("diamonds");
         } else if (input.equals("exit")) {
             App.setCurrentMenu(Menu.Exit);
         } else if (input.equals("menu profile")) {
@@ -34,6 +39,19 @@ public class MainMenu implements AppMenu {
             App.setCurrentMenu(Menu.Network);
         } else {
             System.out.println("invalid command");
+        }
+    }
+
+    private void printWallet(String type) {
+        User user = App.getLoggedInUser();
+        if (user == null) {
+            System.out.println("login required");
+            return;
+        }
+        if ("coins".equals(type)) {
+            System.out.println("coins: " + user.getCoins());
+        } else {
+            System.out.println("diamonds: " + user.getGems());
         }
     }
 }
