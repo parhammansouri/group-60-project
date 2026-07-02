@@ -252,6 +252,7 @@ public class App {
         if (loggedInUser != null && currentSession != null) {
             loggedInUser.addCoins(currentSession.getCoins());
             loggedInUser.addGems(currentSession.getGems());
+            loggedInUser.addCoins(currentSession.getPots() * 25);
             loggedInUser.submitScore(currentSession.getPlayerScore());
             if (currentSession.hasWon()) {
                 loggedInUser.addCoins(currentSession.getLevel().getRewardCoins());

@@ -11,6 +11,13 @@ public class ZombieFactory {
     public static Zombie create(String type) {
         if (type == null) return new BasicZombie();
         switch (type.toLowerCase()) {
+            case "weak":
+                return new BasicZombie("Weak Zombie", 1.0f, 1, 1);
+            case "glowing":
+                BasicZombie glowing = new BasicZombie("Glowing Zombie", 1.0f, 2, 3);
+                glowing.performSpecialAbility();
+                glowing.setHealthStats(20, 20);
+                return glowing;
             case "fast":
                 return new BasicZombie("Fast Zombie", 2.0f, 3, 8);
             case "tank":

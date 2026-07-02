@@ -192,6 +192,7 @@ public class GameplayMenu implements AppMenu {
         printZombie("basic");
         printZombie("fast");
         printZombie("tank");
+        printZombie("glowing");
     }
 
     private void printZombie(String type) {

@@ -34,7 +34,10 @@ public class GameplaySession {
     private List<Zombie> activeZombies;
     private int coins;
     private int gems;
+    private int pots;
     private int playerScore;
+    private int defeatedZombies;
+    private String lastDropMessage;
     private boolean[] lawnMowersUsed;
     private int nextSpawnRow;
     private boolean lost;
@@ -59,7 +62,10 @@ public class GameplaySession {
         this.activeZombies = new ArrayList<>();
         this.coins = 0;
         this.gems = 0;
+        this.pots = 0;
         this.playerScore = 0;
+        this.defeatedZombies = 0;
+        this.lastDropMessage = "";
         this.lawnMowersUsed = new boolean[this.level.getRows()];
         this.nextSpawnRow = 0;
         this.lost = false;
@@ -181,6 +187,10 @@ public class GameplaySession {
 
     public int getGems() {
         return gems;
+    }
+
+    public int getPots() {
+        return pots;
     }
 
     public int getPlayerScore() {
@@ -308,10 +318,17 @@ public class GameplaySession {
                 .append(" sun=").append(sunAmount)
                 .append(" drops=").append(sunSystem.getDroppingSunCount())
                 .append(" plantFood=").append(plantFoodCount)
+                .append(" coins=").append(coins)
+                .append(" gems=").append(gems)
+                .append(" pots=").append(pots)
+                .append(" defeated=").append(defeatedZombies)
                 .append(" projectiles=").append(activeProjectiles.size())
                 .append(" zombies=").append(activeZombies.size())
                 .append(" mechanic=").append(getSpecialMechanicKey())
                 .append(System.lineSeparator());
+        if (!lastDropMessage.isBlank()) {
+            builder.append(lastDropMessage).append(System.lineSeparator());
+        }
         for (int y = 0; y < board.length; y++) {
             builder.append(y + 1).append(" ");
             for (int x = 0; x < board[y].length; x++) {
@@ -461,7 +478,20 @@ public class GameplaySession {
                 board[zombie.getY()][zombie.getX()].removeZombie(zombie);
             }
             iterator.remove();
+            defeatedZombies++;
             coins += 5;
+            lastDropMessage = "A zombie dropped a coin; you have " + coins + " coins now.";
+            if (zombie.isGlowing()) {
+                addPlantFood(1);
+                lastDropMessage = "The glowing zombie dropped a plant food; you have "
+                        + plantFoodCount + " plant foods now.";
+            } else if (defeatedZombies % 5 == 0) {
+                pots++;
+                lastDropMessage = "A zombie dropped a pot; you have " + pots + " pots now.";
+            } else if (defeatedZombies % 3 == 0) {
+                gems++;
+                lastDropMessage = "A zombie dropped a diamond; you have " + gems + " diamonds now.";
+            }
             playerScore += 10;
         }
     }

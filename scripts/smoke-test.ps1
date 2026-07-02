@@ -39,6 +39,7 @@ show sun amount
 cheat add -n 25 suns
 zombies info
 cheat spawn-zombie -t tank -l 9, 1
+cheat spawn-zombie -t glowing -l 5, 1
 plant plant -t shooter -l (1, 1)
 plant plant -t shooter -l (2, 1)
 cheat remove-cooldown
@@ -107,7 +108,9 @@ $required = @(
     "mechanic=boss",
     "sun added; you have 175",
     "Tank Zombie",
+    "Glowing Zombie",
     "zombie spawned",
+    "The glowing zombie dropped a plant food",
     "plant placed",
     "could not place plant",
     "plant cooldowns removed",

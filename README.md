@@ -9,6 +9,7 @@ A command-line Java implementation inspired by Plants vs. Zombies 2 for the Adva
 - Persistent profile, progress, news, quest, and greenhouse state
 - Password hashing with SHA-256
 - Adventure gameplay loop with board display, plants, zombies, waves, sun drops, lawn mowers, scoring, and rewards
+- Zombie drops for coins, diamonds, pots, and glowing-zombie plant food
 - Plant collection, shop purchases, unlockable plants, and persistent loadouts
 - Greenhouse with pots, growing, boosting, and harvesting
 - Quests, minigames, and leaderboard
@@ -88,7 +89,7 @@ show sun amount
 cheat add -n <count> suns
 cheat remove-cooldown
 zombies info
-cheat spawn-zombie -t <zombie-type> -l <x, y>
+cheat spawn-zombie -t <basic|fast|tank|weak|glowing> -l <x, y>
 plant <basic|shooter|slow> <row> <col>
 plant plant -t <type> -l (<x>, <y>)
 tick <count>
@@ -194,6 +195,7 @@ show sun amount
 cheat add -n 25 suns
 zombies info
 cheat spawn-zombie -t tank -l 9, 1
+cheat spawn-zombie -t glowing -l 5, 1
 plant plant -t shooter -l (1, 1)
 plant plant -t shooter -l (2, 1)
 cheat remove-cooldown

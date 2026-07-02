@@ -31,6 +31,11 @@ public abstract class BoardEntity {
         return maxHealth;
     }
 
+    public void setHealthStats(int health, int maxHealth) {
+        this.maxHealth = Math.max(1, maxHealth);
+        this.health = Math.max(0, Math.min(health, this.maxHealth));
+    }
+
     /**
      * Apply damage to this entity
      */
