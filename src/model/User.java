@@ -46,7 +46,7 @@ public class User {
         if (username == null || !username.matches("[A-Za-z0-9_]{3,30}")) {
             throw new IllegalArgumentException("username must be 3-30 letters, digits, or underscores");
         }
-        this.username = username;
+        setUsername(username);
         setPasswordHash(hashPassword(password));
         setEmail(email);
         setNickname(nickname == null || nickname.isBlank() ? username : nickname);
@@ -69,6 +69,13 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username) {
+        if (username == null || !username.matches("[A-Za-z0-9_]{3,30}")) {
+            throw new IllegalArgumentException("username must be 3-30 letters, digits, or underscores");
+        }
+        this.username = username;
     }
 
     public String getNickname() {

@@ -7,16 +7,23 @@ if (Test-Path "data") {
 }
 
 $inputText = @"
-signup testuser pass123 test@example.com TestUser
+register -u testuser -p pass123 pass123 -n TestUser -e test@example.com -g male
 menu show current
+menu logout
+login -u testuser -p pass123 -stay-logged-in
+menu enter profile
+menu profile show-info
+back
 menu enter collection
+menu collection show-plant -p shooter
 buy seed_shooter
 back
 menu enter game
 chapters
 levels 1
 start 1 2
-plant shooter 1 1
+show sun amount
+plant plant -t shooter -l (1, 1)
 tick 6
 sun 2 7
 end
@@ -41,10 +48,14 @@ $outputText | Set-Content -Path "smoke-output.txt"
 $required = @(
     "user registered successfully",
     "current menu: main",
+    "logged in successfully",
+    "username: testuser",
+    "Shooter | sun=50",
     "purchase successful",
     "1. Ancient Egypt (unlocked)",
     "2. Regular Level",
     "game started: Ancient Egypt level 2",
+    "plant placed",
     "sun collected",
     "minigame completed",
     "quest completed",

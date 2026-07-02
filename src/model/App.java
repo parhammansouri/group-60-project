@@ -141,6 +141,18 @@ public class App {
         return users.get(normalizeUsername(username));
     }
 
+    public static boolean changeLoggedInUsername(String newUsername) {
+        if (loggedInUser == null || newUsername == null
+                || !newUsername.matches("[A-Za-z0-9_]{3,30}") || usernameExists(newUsername)) {
+            return false;
+        }
+        users.remove(normalizeUsername(loggedInUser.getUsername()));
+        loggedInUser.setUsername(newUsername);
+        users.put(normalizeUsername(loggedInUser.getUsername()), loggedInUser);
+        saveGameState();
+        return true;
+    }
+
     public static Collection<User> getUsers() {
         return users.values();
     }

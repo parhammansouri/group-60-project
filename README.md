@@ -38,6 +38,7 @@ Signup:
 
 ```text
 signup <username> <password> <email> <nickname>
+register -u <username> -p <password> <password_confirm> -n <nickname> -e <email> -g <gender>
 login
 exit
 ```
@@ -46,6 +47,7 @@ Login:
 
 ```text
 login <username> <password>
+login -u <username> -p <password> -stay-logged-in
 signup
 exit
 ```
@@ -73,12 +75,21 @@ Gameplay:
 chapters
 levels <chapter>
 start
+start game
 start <chapter> <level>
 board
+show map
+show sun amount
 plant <basic|shooter|slow> <row> <col>
+plant plant -t <type> -l (<x>, <y>)
 tick <count>
 sun <row> <col>
 pluck <row> <col>
+pluck plant -l (<x>, <y>)
+feed plant -l (<x>, <y>)
+cheat add-plant-food
+show plants status
+show tile status -l (<x>, <y>)
 end
 back
 ```
@@ -87,8 +98,14 @@ Collection, shop, and greenhouse:
 
 ```text
 plants
+menu collection show-plants
+menu collection show-plant -p <plant_name>
+menu collection show-zombies
 shop
+shop list
+shop daily
 buy <itemId>
+menu collection purchase-plant -p <plant_name>
 greenhouse
 grow <row> <col>
 boost <row> <col>
@@ -129,16 +146,23 @@ The same flow is also checked by GitHub Actions on push and pull request.
 Manual smoke-test input:
 
 ```text
-signup testuser pass123 test@example.com TestUser
+register -u testuser -p pass123 pass123 -n TestUser -e test@example.com -g male
 menu show current
+menu logout
+login -u testuser -p pass123 -stay-logged-in
+menu enter profile
+menu profile show-info
+back
 menu enter collection
+menu collection show-plant -p shooter
 buy seed_shooter
 back
 menu enter game
 chapters
 levels 1
 start 1 2
-plant shooter 1 1
+show sun amount
+plant plant -t shooter -l (1, 1)
 tick 6
 sun 2 7
 end

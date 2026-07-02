@@ -2,12 +2,18 @@ package view.hub;
 
 import model.App;
 import model.User;
+import model.entity.plant.Plant;
+import model.entity.zombie.Zombie;
 import model.enums.Menu;
+import model.factory.PlantFactory;
+import model.factory.ZombieFactory;
 import model.greenhouse.Greenhouse;
 import model.shop.Shop;
 import model.shop.ShopItem;
 import view.AppMenu;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class CollectionMenu implements AppMenu {
@@ -31,10 +37,23 @@ public class CollectionMenu implements AppMenu {
             return;
         }
 
-        if (input.equals("plants")) {
+        if (input.equals("plants") || input.equals("menu collection show-plants")
+                || input.equals("menu collection show-all-plants")
+                || input.equals("show all plants") || input.equals("show available plants")) {
             showPlants(user);
-        } else if (input.equals("shop")) {
+        } else if (input.equals("shop") || input.equals("enter shop") || input.equals("shop list")) {
             showShop(user);
+        } else if (input.equals("shop daily")) {
+            printItem(shop.getDailyDeal());
+        } else if (input.equals("menu collection show-zombies")
+                || input.equals("menu collection show-all-zombies")) {
+            showZombies();
+        } else if (input.startsWith("menu collection show-plant")) {
+            showPlant(parseFlags(parts).get("-p"));
+        } else if (input.startsWith("menu collection show-zombie")) {
+            showZombie(parseFlags(parts).get("-z"));
+        } else if (input.startsWith("menu collection purchase-plant")) {
+            buyPlant(user, parseFlags(parts).get("-p"));
         } else if (parts.length == 2 && parts[0].equals("buy")) {
             buy(user, parts[1]);
         } else if (input.equals("greenhouse")) {
@@ -57,6 +76,32 @@ public class CollectionMenu implements AppMenu {
     private void showPlants(User user) {
         System.out.println("unlocked plants: " + String.join(", ", user.getUnlockedPlantTypes()));
         System.out.println("coins: " + user.getCoins() + " gems: " + user.getGems());
+        showPlant("basic");
+        showPlant("shooter");
+        showPlant("slow");
+    }
+
+    private void showZombies() {
+        showZombie("basic");
+        showZombie("fast");
+        showZombie("tank");
+    }
+
+    private void showPlant(String type) {
+        Plant plant = PlantFactory.create(type);
+        System.out.println(plant.getName()
+                + " | sun=" + plant.getSunCost()
+                + " damage=" + plant.getAttackDamage()
+                + " range=" + plant.getAttackRange());
+    }
+
+    private void showZombie(String type) {
+        Zombie zombie = ZombieFactory.create(type);
+        System.out.println(zombie.getType()
+                + " | speed=" + zombie.getSpeed()
+                + " damage=" + zombie.getDamage()
+                + " health=" + zombie.getHealth()
+                + " cost=" + zombie.getCostToSpawn());
     }
 
     private void showShop(User user) {
@@ -83,6 +128,16 @@ public class CollectionMenu implements AppMenu {
             System.out.println("purchase failed");
         }
         showPlants(user);
+    }
+
+    private void buyPlant(User user, String plantType) {
+        String itemId = switch (plantType == null ? "" : plantType.toLowerCase()) {
+            case "basic" -> "seed_basic";
+            case "shooter" -> "seed_shooter";
+            case "slow" -> "seed_slow";
+            default -> "";
+        };
+        buy(user, itemId);
     }
 
     private void grow(String rowText, String colText) {
@@ -136,5 +191,15 @@ public class CollectionMenu implements AppMenu {
         } catch (NumberFormatException exception) {
             System.out.println("row and col must be numbers");
         }
+    }
+
+    private Map<String, String> parseFlags(String[] parts) {
+        Map<String, String> flags = new HashMap<>();
+        for (int i = 1; i < parts.length; i++) {
+            if (parts[i].startsWith("-") && i + 1 < parts.length) {
+                flags.put(parts[i], parts[++i]);
+            }
+        }
+        return flags;
     }
 }

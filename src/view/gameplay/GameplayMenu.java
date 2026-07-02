@@ -9,6 +9,8 @@ import model.factory.PlantFactory;
 import view.AppMenu;
 
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GameplayMenu implements AppMenu {
     @Override
@@ -27,18 +29,34 @@ public class GameplayMenu implements AppMenu {
             printChapters();
         } else if (parts.length == 2 && parts[0].equals("levels")) {
             printLevels(parts[1]);
+        } else if (input.equals("start game")) {
+            start(new String[]{"start"});
         } else if (parts[0].equals("start")) {
             start(parts);
-        } else if (input.equals("board")) {
+        } else if (input.equals("board") || input.equals("show map")) {
             printBoard();
+        } else if (input.equals("show sun amount")) {
+            printSunAmount();
+        } else if (input.equals("show plants status")) {
+            printPlantStatus();
+        } else if (input.startsWith("show tile status")) {
+            printTileStatus(input);
+        } else if (input.startsWith("plant plant")) {
+            plantOfficial(input);
         } else if (parts.length == 4 && parts[0].equals("plant")) {
             plant(parts);
+        } else if (input.startsWith("pluck plant")) {
+            pluckOfficial(input);
         } else if (parts.length == 2 && parts[0].equals("tick")) {
             tick(parts[1]);
         } else if (parts.length == 3 && parts[0].equals("sun")) {
             collectSun(parts[1], parts[2]);
+        } else if (input.startsWith("feed plant")) {
+            feedPlant(input);
         } else if (parts.length == 3 && parts[0].equals("pluck")) {
             pluck(parts[1], parts[2]);
+        } else if (input.equals("cheat add-plant-food")) {
+            addPlantFood();
         } else if (input.equals("end")) {
             App.endSession();
             System.out.println("game ended");
@@ -120,6 +138,45 @@ public class GameplayMenu implements AppMenu {
         }
     }
 
+    private void printSunAmount() {
+        GameplaySession session = requireSession();
+        if (session != null) {
+            System.out.println("sun: " + session.getSunAmount());
+        }
+    }
+
+    private void printPlantStatus() {
+        GameplaySession session = requireSession();
+        if (session != null) {
+            for (var plant : session.getSelectedPlants()) {
+                System.out.println(plant.getName()
+                        + " | level=" + plant.getLevel()
+                        + " ready=" + plant.isReady()
+                        + " cost=" + plant.getSunCost());
+            }
+        }
+    }
+
+    private void printTileStatus(String input) {
+        GameplaySession session = requireSession();
+        int[] location = parseLocation(input);
+        if (session == null || location == null) {
+            System.out.println("location is invalid");
+            return;
+        }
+        int x = location[0] - 1;
+        int y = location[1] - 1;
+        if (y < 0 || y >= session.getBoard().length || x < 0 || x >= session.getBoard()[y].length) {
+            System.out.println("location is outside map");
+            return;
+        }
+        var tile = session.getBoard()[y][x];
+        String plant = tile.getPlant() == null ? "empty" : tile.getPlant().getName();
+        System.out.println("tile " + location[0] + "," + location[1]
+                + " plant=" + plant
+                + " zombies=" + tile.getZombies().size());
+    }
+
     private void plant(String[] parts) {
         GameplaySession session = requireSession();
         if (session == null) {
@@ -137,6 +194,22 @@ public class GameplayMenu implements AppMenu {
         } catch (NumberFormatException exception) {
             System.out.println("row and col must be numbers");
         }
+    }
+
+    private void plantOfficial(String input) {
+        String[] parts = input.split("\\s+");
+        String type = null;
+        for (int i = 0; i < parts.length - 1; i++) {
+            if ("-t".equals(parts[i])) {
+                type = parts[i + 1];
+            }
+        }
+        int[] location = parseLocation(input);
+        if (type == null || location == null) {
+            System.out.println("usage: plant plant -t <type> -l (<x>, <y>)");
+            return;
+        }
+        plant(new String[]{"plant", type, Integer.toString(location[1]), Integer.toString(location[0])});
     }
 
     private void tick(String count) {
@@ -188,5 +261,47 @@ public class GameplayMenu implements AppMenu {
         } catch (NumberFormatException exception) {
             System.out.println("row and col must be numbers");
         }
+    }
+
+    private void pluckOfficial(String input) {
+        int[] location = parseLocation(input);
+        if (location == null) {
+            System.out.println("usage: pluck plant -l (<x>, <y>)");
+            return;
+        }
+        pluck(Integer.toString(location[1]), Integer.toString(location[0]));
+    }
+
+    private void feedPlant(String input) {
+        GameplaySession session = requireSession();
+        int[] location = parseLocation(input);
+        if (session == null || location == null) {
+            System.out.println("usage: feed plant -l (<x>, <y>)");
+            return;
+        }
+        if (session.usePlantFood(location[0] - 1, location[1] - 1)) {
+            System.out.println("plant fed");
+        } else {
+            System.out.println("could not feed plant");
+        }
+        System.out.println(session.getSessionState());
+    }
+
+    private void addPlantFood() {
+        GameplaySession session = requireSession();
+        if (session != null) {
+            session.addPlantFood(1);
+            System.out.println("plant food added; you have " + session.getPlantFoodCount());
+        }
+    }
+
+    private int[] parseLocation(String input) {
+        Matcher matcher = Pattern.compile("-?\\d+").matcher(input);
+        int[] values = new int[2];
+        int count = 0;
+        while (matcher.find() && count < 2) {
+            values[count++] = Integer.parseInt(matcher.group());
+        }
+        return count == 2 ? values : null;
     }
 }
