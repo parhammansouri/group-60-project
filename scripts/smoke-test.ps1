@@ -12,7 +12,9 @@ menu collection
 buy seed_shooter
 back
 menu game
-start
+chapters
+levels 1
+start 1 2
 plant shooter 1 1
 tick 6
 sun 2 7
@@ -38,7 +40,9 @@ $outputText | Set-Content -Path "smoke-output.txt"
 $required = @(
     "user registered successfully",
     "purchase successful",
-    "game started",
+    "1. Ancient Egypt (unlocked)",
+    "2. Regular Level",
+    "game started: Ancient Egypt level 2",
     "sun collected",
     "minigame completed",
     "quest completed",

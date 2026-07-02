@@ -66,7 +66,10 @@ exit
 Gameplay:
 
 ```text
+chapters
+levels <chapter>
 start
+start <chapter> <level>
 board
 plant <basic|shooter|slow> <row> <col>
 tick <count>
@@ -127,7 +130,9 @@ menu collection
 buy seed_shooter
 back
 menu game
-start
+chapters
+levels 1
+start 1 2
 plant shooter 1 1
 tick 6
 sun 2 7

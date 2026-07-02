@@ -1,6 +1,7 @@
 package model;
 
 import model.entity.plant.Plant;
+import model.enums.ChapterType;
 import model.enums.Menu;
 import model.factory.PlantFactory;
 
@@ -25,6 +26,11 @@ public class App {
     private static Menu currentMenu = Menu.Signup;
     private static GameplaySession currentSession = null;
     private static final Map<String, User> users = new HashMap<>();
+    private static final List<Chapter> adventureChapters = List.of(
+            new Chapter(1, ChapterType.ANCIENT_EGYPT, true),
+            new Chapter(2, ChapterType.FROZEN_CAVES, true),
+            new Chapter(3, ChapterType.BIG_WAVE_BEACH, true),
+            new Chapter(4, ChapterType.DARK_AGES, true));
 
     public static User getLoggedInUser() {
         return loggedInUser;
@@ -80,6 +86,32 @@ public class App {
 
     public static GameplaySession getCurrentSession() {
         return currentSession;
+    }
+
+    public static List<Chapter> getAdventureChapters() {
+        return adventureChapters;
+    }
+
+    public static Chapter getAdventureChapter(int chapterNumber) {
+        for (Chapter chapter : adventureChapters) {
+            if (chapter.getChapterNumber() == chapterNumber) {
+                return chapter;
+            }
+        }
+        return null;
+    }
+
+    public static boolean createNewSession(int chapterNumber, int levelNumber) {
+        Chapter chapter = getAdventureChapter(chapterNumber);
+        if (chapter == null) {
+            return false;
+        }
+        Level level = chapter.getLevel(levelNumber);
+        if (level == null) {
+            return false;
+        }
+        createNewSession(chapter, level, null);
+        return true;
     }
 
     public static void createNewSession(Chapter chapter, Level level, List<Plant> selectedPlants) {

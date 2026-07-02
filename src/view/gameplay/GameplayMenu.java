@@ -1,7 +1,9 @@
 package view.gameplay;
 
 import model.App;
+import model.Chapter;
 import model.GameplaySession;
+import model.Level;
 import model.enums.Menu;
 import model.factory.PlantFactory;
 import view.AppMenu;
@@ -11,15 +13,18 @@ import java.util.Scanner;
 public class GameplayMenu implements AppMenu {
     @Override
     public void handle(Scanner scanner) {
-        System.out.println("Gameplay: start | board | plant <basic|shooter|slow> <row> <col>");
+        System.out.println("Gameplay: chapters | levels <chapter> | start [chapter] [level] | board");
+        System.out.println("plant <basic|shooter|slow> <row> <col>");
         System.out.println("tick <count> | sun <row> <col> | pluck <row> <col> | end | back | exit");
         String input = scanner.nextLine().trim();
         String[] parts = input.split("\\s+");
 
-        if (input.equals("start")) {
-            App.createNewSession(null, null, null);
-            System.out.println("game started");
-            System.out.println(App.getCurrentSession().getSessionState());
+        if (input.equals("chapters")) {
+            printChapters();
+        } else if (parts.length == 2 && parts[0].equals("levels")) {
+            printLevels(parts[1]);
+        } else if (parts[0].equals("start")) {
+            start(parts);
         } else if (input.equals("board")) {
             printBoard();
         } else if (parts.length == 4 && parts[0].equals("plant")) {
@@ -39,6 +44,60 @@ public class GameplayMenu implements AppMenu {
             App.setCurrentMenu(Menu.Exit);
         } else {
             System.out.println("invalid command");
+        }
+    }
+
+    private void printChapters() {
+        for (Chapter chapter : App.getAdventureChapters()) {
+            String status = chapter.isUnlocked() ? "unlocked" : "locked";
+            System.out.printf("%d. %s (%s)%n", chapter.getChapterNumber(), chapter.getName(), status);
+        }
+    }
+
+    private void printLevels(String chapterText) {
+        try {
+            Chapter chapter = App.getAdventureChapter(Integer.parseInt(chapterText));
+            if (chapter == null) {
+                System.out.println("chapter not found");
+                return;
+            }
+            System.out.println(chapter.getName());
+            for (Level level : chapter.getLevels()) {
+                System.out.printf("%d. %s - waves: %d - reward: %d coins, %d gems%n",
+                        level.getLevelNumber(),
+                        level.getType().getDisplayName(),
+                        level.getNumWaves(),
+                        level.getRewardCoins(),
+                        level.getRewardGems());
+            }
+        } catch (NumberFormatException exception) {
+            System.out.println("chapter must be a number");
+        }
+    }
+
+    private void start(String[] parts) {
+        try {
+            boolean started;
+            if (parts.length == 1) {
+                App.createNewSession(null, null, null);
+                started = true;
+            } else if (parts.length == 3) {
+                started = App.createNewSession(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+            } else {
+                System.out.println("usage: start [chapter] [level]");
+                return;
+            }
+            if (!started) {
+                System.out.println("chapter or level not found");
+                return;
+            }
+            GameplaySession session = App.getCurrentSession();
+            System.out.printf("game started: %s level %d%n",
+                    session.getChapter().getName(),
+                    session.getLevel().getLevelNumber());
+            System.out.println(session.getSessionState());
+        } catch (NumberFormatException exception) {
+            System.out.println("chapter and level must be numbers");
         }
     }
 
