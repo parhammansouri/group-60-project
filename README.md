@@ -23,8 +23,7 @@ A command-line Java implementation inspired by Plants vs. Zombies 2 for the Adva
 From the repository root:
 
 ```powershell
-Get-ChildItem -Path src -Recurse -Filter *.java | ForEach-Object { $_.FullName } | Set-Content sources.txt
-javac -d out '@sources.txt'
+powershell -ExecutionPolicy Bypass -File ./scripts/build.ps1
 ```
 
 ## Run
@@ -110,7 +109,15 @@ back
 
 ## Smoke Test
 
-After building, this input exercises the main systems:
+Run the automated smoke test:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File ./scripts/smoke-test.ps1
+```
+
+The same flow is also checked by GitHub Actions on push and pull request.
+
+Manual smoke-test input:
 
 ```text
 signup testuser pass123 test@example.com TestUser
@@ -138,4 +145,3 @@ exit
 ## Data Files
 
 Runtime data is written under `data/`, which is ignored by Git.
-
