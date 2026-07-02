@@ -55,6 +55,14 @@ public class CollectionMenu implements AppMenu {
             showZombie(parseFlags(parts).get("-z"));
         } else if (input.startsWith("menu collection purchase-plant")) {
             buyPlant(user, parseFlags(parts).get("-p"));
+        } else if (input.startsWith("menu collection upgrade-plant")) {
+            boostSelectedPlant(user, parseFlags(parts).get("-p"));
+        } else if (input.startsWith("add plant")) {
+            addSelectedPlant(user, parseFlags(parts).get("-t"));
+        } else if (input.startsWith("remove plant")) {
+            removeSelectedPlant(user, parseFlags(parts).get("-t"));
+        } else if (input.startsWith("boost plant")) {
+            boostSelectedPlant(user, parseFlags(parts).get("-t"));
         } else if (parts.length == 2 && parts[0].equals("buy")) {
             buy(user, parts[1]);
         } else if (input.equals("greenhouse")) {
@@ -76,10 +84,11 @@ public class CollectionMenu implements AppMenu {
 
     private void showPlants(User user) {
         System.out.println("unlocked plants: " + String.join(", ", user.getUnlockedPlantTypes()));
+        System.out.println("selected plants: " + String.join(", ", user.getSelectedPlantTypes()));
         System.out.println("coins: " + user.getCoins() + " gems: " + user.getGems());
-        showPlant("basic");
-        showPlant("shooter");
-        showPlant("slow");
+        showPlant(user, "basic");
+        showPlant(user, "shooter");
+        showPlant(user, "slow");
     }
 
     private void showZombies() {
@@ -91,6 +100,18 @@ public class CollectionMenu implements AppMenu {
     private void showPlant(String type) {
         Plant plant = PlantFactory.create(type);
         System.out.println(plant.getName()
+                + " | sun=" + plant.getSunCost()
+                + " damage=" + plant.getAttackDamage()
+                + " range=" + plant.getAttackRange());
+    }
+
+    private void showPlant(User user, String type) {
+        Plant plant = PlantFactory.create(type);
+        for (int level = 1; level < user.getPlantLevel(type); level++) {
+            plant.upgrade();
+        }
+        System.out.println(plant.getName()
+                + " | level=" + user.getPlantLevel(type)
                 + " | sun=" + plant.getSunCost()
                 + " damage=" + plant.getAttackDamage()
                 + " range=" + plant.getAttackRange());
@@ -139,6 +160,40 @@ public class CollectionMenu implements AppMenu {
             default -> "";
         };
         buy(user, itemId);
+    }
+
+    private void addSelectedPlant(User user, String plantType) {
+        if (user.addSelectedPlant(plantType)) {
+            App.saveGameState();
+            System.out.println("plant added to loadout");
+        } else {
+            System.out.println("could not add plant to loadout");
+        }
+        System.out.println("selected plants: " + String.join(", ", user.getSelectedPlantTypes()));
+    }
+
+    private void removeSelectedPlant(User user, String plantType) {
+        if (user.removeSelectedPlant(plantType)) {
+            App.saveGameState();
+            System.out.println("plant removed from loadout");
+        } else {
+            System.out.println("could not remove plant from loadout");
+        }
+        System.out.println("selected plants: " + String.join(", ", user.getSelectedPlantTypes()));
+    }
+
+    private void boostSelectedPlant(User user, String plantType) {
+        if (!user.removeGems(1)) {
+            System.out.println("not enough gems");
+            return;
+        }
+        if (user.boostPlant(plantType)) {
+            App.saveGameState();
+            System.out.println("plant boosted to level " + user.getPlantLevel(plantType));
+        } else {
+            user.addGems(1);
+            System.out.println("could not boost plant");
+        }
     }
 
     private void grow(User user, String rowText, String colText) {

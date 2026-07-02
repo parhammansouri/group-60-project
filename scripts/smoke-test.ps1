@@ -24,6 +24,9 @@ back
 menu enter collection
 menu collection show-plant -p shooter
 buy seed_shooter
+add plant -t shooter
+remove plant -t basic
+boost plant -t shooter
 greenhouse
 grow 1 1
 boost 1 1
@@ -57,6 +60,7 @@ $secondInputText = @"
 login
 login -u testuser -p pass123
 menu enter collection
+plants
 greenhouse
 harvest 1 1
 back
@@ -84,6 +88,10 @@ $required = @(
     "username: testuser",
     "Shooter | sun=50",
     "purchase successful",
+    "plant added to loadout",
+    "plant removed from loadout",
+    "plant boosted to level 2",
+    "selected plants: shooter",
     "plant started growing",
     "plant boosted",
     "1. Ancient Egypt (unlocked)",

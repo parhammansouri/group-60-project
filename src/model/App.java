@@ -231,10 +231,18 @@ public class App {
     public static void createNewSession(Chapter chapter, Level level, List<Plant> selectedPlants) {
         Chapter activeChapter = chapter == null ? Chapter.createDefault() : chapter;
         Level activeLevel = level == null ? activeChapter.getLevel(1) : level;
-        List<Plant> plants = selectedPlants == null || selectedPlants.isEmpty()
-                ? List.of(PlantFactory.create("basic"), PlantFactory.create("shooter"), PlantFactory.create("slow"))
-                : selectedPlants;
+        List<Plant> plants = resolveSelectedPlants(selectedPlants);
         currentSession = new GameplaySession(activeChapter, activeLevel, plants);
+    }
+
+    private static List<Plant> resolveSelectedPlants(List<Plant> selectedPlants) {
+        if (selectedPlants != null && !selectedPlants.isEmpty()) {
+            return selectedPlants;
+        }
+        if (loggedInUser != null && !loggedInUser.createSelectedPlants().isEmpty()) {
+            return loggedInUser.createSelectedPlants();
+        }
+        return List.of(PlantFactory.create("basic"), PlantFactory.create("shooter"), PlantFactory.create("slow"));
     }
 
     /**

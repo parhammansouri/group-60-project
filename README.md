@@ -9,7 +9,7 @@ A command-line Java implementation inspired by Plants vs. Zombies 2 for the Adva
 - Persistent profile, progress, news, quest, and greenhouse state
 - Password hashing with SHA-256
 - Adventure gameplay loop with board display, plants, zombies, waves, sun drops, lawn mowers, scoring, and rewards
-- Plant collection, shop purchases, and unlockable plants
+- Plant collection, shop purchases, unlockable plants, and persistent loadouts
 - Greenhouse with pots, growing, boosting, and harvesting
 - Quests, minigames, and leaderboard
 - Chapter, level, special-level mechanic, armor, sun, and wave models
@@ -107,11 +107,15 @@ plants
 menu collection show-plants
 menu collection show-plant -p <plant_name>
 menu collection show-zombies
+menu collection upgrade-plant -p <plant_name>
 shop
 shop list
 shop daily
 buy <itemId>
 menu collection purchase-plant -p <plant_name>
+add plant -t <type>
+remove plant -t <type>
+boost plant -t <type>
 greenhouse
 grow <row> <col>
 boost <row> <col>
@@ -171,6 +175,12 @@ back
 menu enter collection
 menu collection show-plant -p shooter
 buy seed_shooter
+add plant -t shooter
+remove plant -t basic
+boost plant -t shooter
+greenhouse
+grow 1 1
+boost 1 1
 back
 menu enter game
 chapters
@@ -193,6 +203,18 @@ menu news show-unread
 read welcome
 menu news show-all
 score
+back
+exit
+login
+login -u testuser -p pass123
+menu enter collection
+plants
+greenhouse
+harvest 1 1
+back
+menu enter network
+quests
+claim mini_start
 back
 exit
 ```

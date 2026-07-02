@@ -40,6 +40,8 @@ public class User {
     private List<String> seenNewsIds;
     private String greenhouseState;
     private List<String> completedQuestIds;
+    private List<String> selectedPlantTypes;
+    private Map<String, Integer> plantLevels;
 
     private List<Plant> unlockedPlants;
     private List<String> unlockedPlantTypes;
@@ -68,7 +70,10 @@ public class User {
         this.seenNewsIds = new ArrayList<>();
         this.greenhouseState = "";
         this.completedQuestIds = new ArrayList<>();
+        this.selectedPlantTypes = new ArrayList<>();
+        this.plantLevels = new HashMap<>();
         unlockPlant("basic");
+        addSelectedPlant("basic");
     }
 
     public String getUsername() {
@@ -261,7 +266,55 @@ public class User {
         }
         unlockedPlantTypes.add(normalized);
         unlockedPlants.add(PlantFactory.create(normalized));
+        plantLevels.putIfAbsent(normalized, 1);
         return true;
+    }
+
+    public List<String> getSelectedPlantTypes() {
+        return selectedPlantTypes;
+    }
+
+    public boolean addSelectedPlant(String plantType) {
+        String normalized = normalizePlantType(plantType);
+        if (!hasUnlockedPlant(normalized) || selectedPlantTypes.contains(normalized)) {
+            return false;
+        }
+        selectedPlantTypes.add(normalized);
+        return true;
+    }
+
+    public boolean removeSelectedPlant(String plantType) {
+        String normalized = normalizePlantType(plantType);
+        if ("basic".equals(normalized) && selectedPlantTypes.size() == 1) {
+            return false;
+        }
+        return selectedPlantTypes.remove(normalized);
+    }
+
+    public int getPlantLevel(String plantType) {
+        return plantLevels.getOrDefault(normalizePlantType(plantType), 1);
+    }
+
+    public boolean boostPlant(String plantType) {
+        String normalized = normalizePlantType(plantType);
+        if (!hasUnlockedPlant(normalized)) {
+            return false;
+        }
+        plantLevels.put(normalized, getPlantLevel(normalized) + 1);
+        return true;
+    }
+
+    public List<Plant> createSelectedPlants() {
+        List<Plant> plants = new ArrayList<>();
+        List<String> source = selectedPlantTypes.isEmpty() ? unlockedPlantTypes : selectedPlantTypes;
+        for (String plantType : source) {
+            Plant plant = PlantFactory.create(plantType);
+            for (int level = 1; level < getPlantLevel(plantType); level++) {
+                plant.upgrade();
+            }
+            plants.add(plant);
+        }
+        return plants;
     }
 
     public int getHighestScore() {
@@ -347,13 +400,15 @@ public class User {
                 Integer.toString(questsCompleted),
                 encode(String.join(",", seenNewsIds)),
                 encode(greenhouseState),
-                encode(String.join(",", completedQuestIds)));
+                encode(String.join(",", completedQuestIds)),
+                encode(String.join(",", selectedPlantTypes)),
+                encode(serializePlantLevels()));
     }
 
     public static User fromStorageRecord(String record) {
         String[] fields = record.split("\t", -1);
         if (fields.length != 10 && fields.length != 11 && fields.length != 16
-                && fields.length != 17 && fields.length != 19) {
+                && fields.length != 17 && fields.length != 19 && fields.length != 21) {
             throw new IllegalArgumentException("invalid user record");
         }
 
@@ -399,6 +454,19 @@ public class User {
                 }
             }
         }
+        if (fields.length >= 21) {
+            user.selectedPlantTypes.clear();
+            for (String plantType : decode(fields[19]).split(",")) {
+                if (!plantType.isBlank() && user.hasUnlockedPlant(plantType)) {
+                    user.selectedPlantTypes.add(plantType);
+                }
+            }
+            user.plantLevels.clear();
+            user.restorePlantLevels(decode(fields[20]));
+        }
+        if (user.selectedPlantTypes.isEmpty() && user.hasUnlockedPlant("basic")) {
+            user.selectedPlantTypes.add("basic");
+        }
         return user;
     }
 
@@ -430,5 +498,30 @@ public class User {
 
     private static String normalizePlantType(String plantType) {
         return plantType == null ? "" : plantType.trim().toLowerCase();
+    }
+
+    private String serializePlantLevels() {
+        List<String> records = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : plantLevels.entrySet()) {
+            records.add(entry.getKey() + ":" + entry.getValue());
+        }
+        return String.join(",", records);
+    }
+
+    private void restorePlantLevels(String record) {
+        if (record == null || record.isBlank()) {
+            return;
+        }
+        for (String item : record.split(",")) {
+            String[] parts = item.split(":", -1);
+            if (parts.length != 2) {
+                continue;
+            }
+            try {
+                plantLevels.put(normalizePlantType(parts[0]), Math.max(1, Integer.parseInt(parts[1])));
+            } catch (NumberFormatException exception) {
+                plantLevels.put(normalizePlantType(parts[0]), 1);
+            }
+        }
     }
 }
