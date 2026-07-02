@@ -34,11 +34,12 @@ back
 menu enter game
 chapters
 levels 1
-start 1 2
+start 1 4
 show sun amount
 cheat add -n 25 suns
 plant plant -t shooter -l (1, 1)
-tick 6
+start zombie waves
+tick 5
 sun 2 7
 end
 back
@@ -96,7 +97,9 @@ $required = @(
     "plant boosted",
     "1. Ancient Egypt (unlocked)",
     "2. Regular Level",
-    "game started: Ancient Egypt level 2",
+    "4. Boss Level",
+    "game started: Ancient Egypt level 4",
+    "mechanic=boss",
     "sun added; you have 175",
     "plant placed",
     "sun collected",

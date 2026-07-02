@@ -89,6 +89,7 @@ cheat add -n <count> suns
 plant <basic|shooter|slow> <row> <col>
 plant plant -t <type> -l (<x>, <y>)
 tick <count>
+start zombie waves
 sun <row> <col>
 pluck <row> <col>
 pluck plant -l (<x>, <y>)
@@ -185,11 +186,12 @@ back
 menu enter game
 chapters
 levels 1
-start 1 2
+start 1 4
 show sun amount
 cheat add -n 25 suns
 plant plant -t shooter -l (1, 1)
-tick 6
+start zombie waves
+tick 5
 sun 2 7
 end
 back

@@ -5,6 +5,8 @@ import model.entity.projectile.Projectile;
 import model.entity.zombie.Zombie;
 import model.enums.TileType;
 import model.factory.PlantFactory;
+import model.special.SpecialMechanic;
+import model.special.SpecialMechanicFactory;
 import model.sun.SunSystem;
 
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ public class GameplaySession {
     private boolean[] lawnMowersUsed;
     private int nextSpawnRow;
     private boolean lost;
+    private SpecialMechanic specialMechanic;
 
     public GameplaySession() {
         this(null, new Level(), List.of(PlantFactory.create("basic")));
@@ -59,6 +62,9 @@ public class GameplaySession {
         this.lawnMowersUsed = new boolean[this.level.getRows()];
         this.nextSpawnRow = 0;
         this.lost = false;
+        this.specialMechanic = SpecialMechanicFactory.create(this.level.getType(), this.level);
+        this.specialMechanic.init();
+        this.specialMechanic.onWaveStart(currentWave.getWaveNumber());
     }
 
     public Chapter getChapter() {
@@ -77,13 +83,19 @@ public class GameplaySession {
         return currentWave;
     }
 
+    public String getSpecialMechanicKey() {
+        return specialMechanic.getKey();
+    }
+
     /**
      * Progress to next wave
      */
     public void nextWave() {
+        specialMechanic.onWaveEnd(currentWave.getWaveNumber());
         int nextWaveNumber = currentWave.getWaveNumber() + 1;
         if (nextWaveNumber <= totalWaves) {
             currentWave = new Wave(nextWaveNumber, level.getWaveCost(nextWaveNumber));
+            specialMechanic.onWaveStart(nextWaveNumber);
             spawnWave();
         } else {
             currentWave = new Wave(totalWaves + 1, 0);
@@ -122,6 +134,7 @@ public class GameplaySession {
     public void advanceTime(int ticks) {
         for (int i = 0; i < ticks && !hasWon() && !hasLost(); i++) {
             tickCount++;
+            specialMechanic.onTick();
             currentWave.update();
             sunSystem.update(tickCount);
             sunAmount = sunSystem.getTotalSun();
@@ -268,6 +281,7 @@ public class GameplaySession {
                 .append(" plantFood=").append(plantFoodCount)
                 .append(" projectiles=").append(activeProjectiles.size())
                 .append(" zombies=").append(activeZombies.size())
+                .append(" mechanic=").append(getSpecialMechanicKey())
                 .append(System.lineSeparator());
         for (int y = 0; y < board.length; y++) {
             builder.append(y + 1).append(" ");

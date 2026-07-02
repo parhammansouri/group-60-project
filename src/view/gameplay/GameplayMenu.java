@@ -31,6 +31,8 @@ public class GameplayMenu implements AppMenu {
             printLevels(parts[1]);
         } else if (input.equals("start game")) {
             start(new String[]{"start"});
+        } else if (input.equals("start zombie waves")) {
+            tick("1");
         } else if (parts[0].equals("start")) {
             start(parts);
         } else if (input.equals("board") || input.equals("show map")) {
