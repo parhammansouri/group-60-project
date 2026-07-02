@@ -21,6 +21,10 @@ public class SettingsMenu implements AppMenu {
         String input = scanner.nextLine().trim();
         String[] parts = input.split("\\s+", 3);
 
+        if (App.handleGlobalMenuCommand(input)) {
+            return;
+        }
+
         if (parts.length == 2 && parts[0].equals("difficulty")) {
             try {
                 user.setDifficultyLevel(Integer.parseInt(parts[1]));

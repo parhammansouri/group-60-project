@@ -14,6 +14,10 @@ public class LoginMenu implements AppMenu {
         String input = scanner.nextLine();
         String[] parts = input.trim().split("\\s+");
 
+        if (model.App.handleGlobalMenuCommand(input)) {
+            return;
+        }
+
         if (parts.length == 3 && parts[0].equals("login")) {
             System.out.println(controller.login(parts[1], parts[2]));
         } else if (input.trim().equals("signup")) {

@@ -14,6 +14,10 @@ public class SignupMenu implements AppMenu {
         String input = scanner.nextLine();
         String[] parts = input.trim().split("\\s+", 5);
 
+        if (model.App.handleGlobalMenuCommand(input)) {
+            return;
+        }
+
         if (parts.length == 5 && parts[0].equals("signup")) {
             System.out.println(controller.register(parts[1], parts[2], parts[3], parts[4]));
         } else if (input.trim().equals("login")) {

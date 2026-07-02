@@ -24,6 +24,10 @@ public class NewsMenu implements AppMenu {
         System.out.println("News: news | read <id> | score | progress | back | exit");
         String input = scanner.nextLine().trim();
         String[] parts = input.split("\\s+");
+        if (App.handleGlobalMenuCommand(input)) {
+            return;
+        }
+
         if (input.equals("news")) {
             printNews(user);
         } else if (parts.length == 2 && parts[0].equals("read")) {

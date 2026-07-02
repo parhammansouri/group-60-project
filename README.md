@@ -53,6 +53,10 @@ exit
 Main menu:
 
 ```text
+menu show current
+menu enter <menu_name>
+menu exit
+menu logout
 menu profile
 menu settings
 menu collection
@@ -126,10 +130,11 @@ Manual smoke-test input:
 
 ```text
 signup testuser pass123 test@example.com TestUser
-menu collection
+menu show current
+menu enter collection
 buy seed_shooter
 back
-menu game
+menu enter game
 chapters
 levels 1
 start 1 2
@@ -138,12 +143,12 @@ tick 6
 sun 2 7
 end
 back
-menu network
+menu enter network
 play vasebreaker
 quests
 claim mini_start
 back
-menu news
+menu enter news
 news
 read welcome
 score

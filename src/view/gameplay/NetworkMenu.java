@@ -29,6 +29,10 @@ public class NetworkMenu implements AppMenu {
         String input = scanner.nextLine().trim();
         String[] parts = input.split("\\s+");
 
+        if (App.handleGlobalMenuCommand(input)) {
+            return;
+        }
+
         if (input.equals("quests")) {
             System.out.print(questBook.getStatus(user));
         } else if (parts.length == 2 && parts[0].equals("claim")) {

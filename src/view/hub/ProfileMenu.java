@@ -29,6 +29,10 @@ public class ProfileMenu implements AppMenu {
         System.out.println("back | exit");
 
         String input = scanner.nextLine().trim();
+        if (App.handleGlobalMenuCommand(input)) {
+            return;
+        }
+
         if (input.equals("back")) {
             App.setCurrentMenu(Menu.Main);
         } else if (input.equals("exit")) {

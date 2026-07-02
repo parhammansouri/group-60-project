@@ -60,6 +60,71 @@ public class App {
         currentMenu = menu;
     }
 
+    public static boolean handleGlobalMenuCommand(String input) {
+        String normalized = input == null ? "" : input.trim().toLowerCase();
+        if (normalized.equals("menu show current")) {
+            System.out.println("current menu: " + currentMenu.name().toLowerCase());
+            return true;
+        }
+        if (normalized.equals("menu logout")) {
+            logout();
+            System.out.println("logged out");
+            return true;
+        }
+        if (normalized.equals("menu exit")) {
+            exitCurrentMenu();
+            return true;
+        }
+        if (normalized.startsWith("menu enter ")) {
+            enterMenu(normalized.substring("menu enter ".length()).trim());
+            return true;
+        }
+        return false;
+    }
+
+    private static void exitCurrentMenu() {
+        switch (currentMenu) {
+            case Signup, Exit -> setCurrentMenu(Menu.Exit);
+            case Login -> setCurrentMenu(Menu.Signup);
+            case Main -> System.out.println("use menu logout to leave main menu");
+            case Collection -> setCurrentMenu(Menu.Game);
+            default -> setCurrentMenu(Menu.Main);
+        }
+    }
+
+    private static void enterMenu(String target) {
+        Menu menu = resolveMenuTarget(target);
+        if (menu == null) {
+            System.out.println("menu not found");
+            return;
+        }
+        if (requiresLogin(menu) && !isUserLoggedIn()) {
+            System.out.println("login required");
+            return;
+        }
+        setCurrentMenu(menu);
+    }
+
+    private static Menu resolveMenuTarget(String target) {
+        String name = target.split("\\s+")[0].replace("-", "");
+        return switch (name) {
+            case "signup", "register" -> Menu.Signup;
+            case "login" -> Menu.Login;
+            case "main" -> Menu.Main;
+            case "profile", "coinwallet", "gemwallet" -> Menu.Profile;
+            case "settings", "setting" -> Menu.Settings;
+            case "collection", "greenhouse", "shop" -> Menu.Collection;
+            case "news", "leaderboard" -> Menu.News;
+            case "game", "chapter" -> Menu.Game;
+            case "network", "travellog", "quest", "quests", "minigame", "minigames" -> Menu.Network;
+            default -> null;
+        };
+    }
+
+    private static boolean requiresLogin(Menu menu) {
+        return menu != Menu.Signup && menu != Menu.Login && menu != Menu.Exit;
+    }
+
     public static boolean usernameExists(String username) {
         return users.containsKey(normalizeUsername(username));
     }

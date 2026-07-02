@@ -27,6 +27,10 @@ public class CollectionMenu implements AppMenu {
         String input = scanner.nextLine().trim();
         String[] parts = input.split("\\s+");
 
+        if (App.handleGlobalMenuCommand(input)) {
+            return;
+        }
+
         if (input.equals("plants")) {
             showPlants(user);
         } else if (input.equals("shop")) {

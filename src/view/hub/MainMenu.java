@@ -12,6 +12,10 @@ public class MainMenu implements AppMenu {
         System.out.println("Main menu: menu <profile|settings|collection|news|game|network> | logout | exit");
         String input = scanner.nextLine().trim();
 
+        if (App.handleGlobalMenuCommand(input)) {
+            return;
+        }
+
         if (input.equals("logout")) {
             App.logout();
         } else if (input.equals("exit")) {
