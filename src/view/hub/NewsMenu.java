@@ -1,22 +1,37 @@
 package view.hub;
 
+import controller.hub.NewsMenuController;
 import model.App;
+import model.News;
+import model.User;
 import model.enums.Menu;
-import model.leaderboard.Leaderboard;
 import model.leaderboard.LeaderboardEntry;
 import view.AppMenu;
 
 import java.util.Scanner;
 
 public class NewsMenu implements AppMenu {
+    private final NewsMenuController controller = new NewsMenuController();
+
     @Override
     public void handle(Scanner scanner) {
-        System.out.println("Leaderboard: score | progress | back | exit");
+        User user = App.getLoggedInUser();
+        if (user == null) {
+            App.setCurrentMenu(Menu.Login);
+            return;
+        }
+
+        System.out.println("News: news | read <id> | score | progress | back | exit");
         String input = scanner.nextLine().trim();
-        if (input.equals("score")) {
-            printLeaderboard(new Leaderboard().sortedByHighScore());
+        String[] parts = input.split("\\s+");
+        if (input.equals("news")) {
+            printNews(user);
+        } else if (parts.length == 2 && parts[0].equals("read")) {
+            readNews(user, parts[1]);
+        } else if (input.equals("score")) {
+            printLeaderboard(controller.leaderboardByScore());
         } else if (input.equals("progress")) {
-            printLeaderboard(new Leaderboard().sortedByProgress());
+            printLeaderboard(controller.leaderboardByProgress());
         } else if (input.equals("back")) {
             App.setCurrentMenu(Menu.Main);
         } else if (input.equals("exit")) {
@@ -24,6 +39,24 @@ public class NewsMenu implements AppMenu {
         } else {
             System.out.println("invalid command");
         }
+    }
+
+    private void printNews(User user) {
+        for (News news : controller.getNewsItems()) {
+            String status = user.hasSeenNews(news) ? "read" : "new";
+            System.out.println(news.getId() + " | " + news.getTitle() + " | " + status);
+        }
+    }
+
+    private void readNews(User user, String id) {
+        News news = controller.getNews(id);
+        if (news == null) {
+            System.out.println("news not found");
+            return;
+        }
+        user.markNewsSeen(news);
+        App.saveGameState();
+        System.out.println(news.getTitle() + ": " + news.getMessage());
     }
 
     private void printLeaderboard(Iterable<LeaderboardEntry> entries) {

@@ -24,6 +24,8 @@ quests
 claim mini_start
 back
 menu news
+news
+read welcome
 score
 back
 exit
@@ -40,6 +42,7 @@ $required = @(
     "sun collected",
     "minigame completed",
     "quest completed",
+    "Welcome: The lawn defense campaign is now active.",
     "1. TestUser"
 )
 

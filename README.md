@@ -99,9 +99,11 @@ play <vasebreaker|bowling|izombie>
 back
 ```
 
-Leaderboard:
+News and leaderboard:
 
 ```text
+news
+read <id>
 score
 progress
 back
@@ -137,6 +139,8 @@ quests
 claim mini_start
 back
 menu news
+news
+read welcome
 score
 back
 exit

@@ -37,6 +37,7 @@ public class User {
     private int maxLevel;
     private int minigamesCompleted;
     private int questsCompleted;
+    private List<String> seenNewsIds;
 
     private List<Plant> unlockedPlants;
     private List<String> unlockedPlantTypes;
@@ -62,6 +63,7 @@ public class User {
         this.maxLevel = 1;
         this.minigamesCompleted = 0;
         this.questsCompleted = 0;
+        this.seenNewsIds = new ArrayList<>();
         unlockPlant("basic");
     }
 
@@ -126,7 +128,15 @@ public class User {
     }
 
     public boolean hasSeenNews(News news) {
-        return Boolean.TRUE.equals(newsList.get(news));
+        return news != null && seenNewsIds.contains(news.getId());
+    }
+
+    public void markNewsSeen(News news) {
+        if (news == null || hasSeenNews(news)) {
+            return;
+        }
+        seenNewsIds.add(news.getId());
+        newsList.put(news, true);
     }
 
     public int getCoins() {
@@ -299,12 +309,13 @@ public class User {
                 Integer.toString(maxChapter),
                 Integer.toString(maxLevel),
                 Integer.toString(minigamesCompleted),
-                Integer.toString(questsCompleted));
+                Integer.toString(questsCompleted),
+                encode(String.join(",", seenNewsIds)));
     }
 
     public static User fromStorageRecord(String record) {
         String[] fields = record.split("\t", -1);
-        if (fields.length != 10 && fields.length != 11 && fields.length != 16) {
+        if (fields.length != 10 && fields.length != 11 && fields.length != 16 && fields.length != 17) {
             throw new IllegalArgumentException("invalid user record");
         }
 
@@ -326,12 +337,20 @@ public class User {
         } else {
             user.unlockPlant("basic");
         }
-        if (fields.length == 16) {
+        if (fields.length >= 16) {
             user.highestScore = Integer.parseInt(fields[11]);
             user.maxChapter = Integer.parseInt(fields[12]);
             user.maxLevel = Integer.parseInt(fields[13]);
             user.minigamesCompleted = Integer.parseInt(fields[14]);
             user.questsCompleted = Integer.parseInt(fields[15]);
+        }
+        if (fields.length == 17 && !decode(fields[16]).isBlank()) {
+            user.seenNewsIds.clear();
+            for (String newsId : decode(fields[16]).split(",")) {
+                if (!newsId.isBlank()) {
+                    user.seenNewsIds.add(newsId);
+                }
+            }
         }
         return user;
     }
