@@ -64,6 +64,8 @@ menu logout
 menu coin-wallet
 menu gem-wallet
 menu cheat add <n> <coin|diamond>
+menu leaderboard
+menu travel-log
 menu profile
 menu settings
 menu collection
@@ -221,6 +223,8 @@ read welcome
 menu news show-all
 score
 back
+menu travel-log
+menu leaderboard
 exit
 login
 login -u testuser -p pass123

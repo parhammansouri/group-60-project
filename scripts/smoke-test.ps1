@@ -61,6 +61,8 @@ read welcome
 menu news show-all
 score
 back
+menu travel-log
+menu leaderboard
 exit
 "@
 
@@ -121,6 +123,8 @@ $required = @(
     "quest completed",
     "Welcome: The lawn defense campaign is now active.",
     "1. TestUser",
+    "travel log",
+    "minigames completed: 1",
     "harvested",
     "quest already completed"
 )
