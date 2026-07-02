@@ -5,6 +5,7 @@ import model.entity.projectile.Projectile;
 import model.entity.zombie.Zombie;
 import model.enums.TileType;
 import model.factory.PlantFactory;
+import model.factory.ZombieFactory;
 import model.special.SpecialMechanic;
 import model.special.SpecialMechanicFactory;
 import model.sun.SunSystem;
@@ -213,6 +214,16 @@ public class GameplaySession {
 
     public List<Zombie> getActiveZombies() {
         return activeZombies;
+    }
+
+    public boolean spawnZombie(String type, int x, int y) {
+        if (!isInsideBoard(x, y)) {
+            return false;
+        }
+        Zombie zombie = ZombieFactory.create(type);
+        board[y][x].addZombie(zombie);
+        activeZombies.add(zombie);
+        return true;
     }
 
     /**

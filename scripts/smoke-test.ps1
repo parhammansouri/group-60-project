@@ -37,6 +37,8 @@ levels 1
 start 1 4
 show sun amount
 cheat add -n 25 suns
+zombies info
+cheat spawn-zombie -t tank -l 9, 1
 plant plant -t shooter -l (1, 1)
 start zombie waves
 tick 5
@@ -101,6 +103,8 @@ $required = @(
     "game started: Ancient Egypt level 4",
     "mechanic=boss",
     "sun added; you have 175",
+    "Tank Zombie",
+    "zombie spawned",
     "plant placed",
     "sun collected",
     "minigame completed",

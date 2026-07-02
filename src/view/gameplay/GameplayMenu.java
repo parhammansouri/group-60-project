@@ -4,8 +4,10 @@ import model.App;
 import model.Chapter;
 import model.GameplaySession;
 import model.Level;
+import model.entity.zombie.Zombie;
 import model.enums.Menu;
 import model.factory.PlantFactory;
+import model.factory.ZombieFactory;
 import view.AppMenu;
 
 import java.util.Scanner;
@@ -41,6 +43,8 @@ public class GameplayMenu implements AppMenu {
             printSunAmount();
         } else if (input.equals("show plants status")) {
             printPlantStatus();
+        } else if (input.equals("zombies info")) {
+            printZombieInfo();
         } else if (input.startsWith("show tile status")) {
             printTileStatus(input);
         } else if (input.startsWith("plant plant")) {
@@ -59,6 +63,8 @@ public class GameplayMenu implements AppMenu {
             pluck(parts[1], parts[2]);
         } else if (input.startsWith("cheat add -n") && input.endsWith("suns")) {
             addSuns(parts);
+        } else if (input.startsWith("cheat spawn-zombie")) {
+            spawnZombie(input);
         } else if (input.equals("cheat add-plant-food")) {
             addPlantFood();
         } else if (input.equals("end")) {
@@ -179,6 +185,22 @@ public class GameplayMenu implements AppMenu {
         System.out.println("tile " + location[0] + "," + location[1]
                 + " plant=" + plant
                 + " zombies=" + tile.getZombies().size());
+    }
+
+    private void printZombieInfo() {
+        printZombie("basic");
+        printZombie("fast");
+        printZombie("tank");
+    }
+
+    private void printZombie(String type) {
+        Zombie zombie = ZombieFactory.create(type);
+        System.out.println(zombie.getType()
+                + " | speed=" + zombie.getSpeed()
+                + " damage=" + zombie.getDamage()
+                + " health=" + zombie.getHealth()
+                + " cost=" + zombie.getCostToSpawn()
+                + " armor=" + zombie.getArmor().size());
     }
 
     private void plant(String[] parts) {
@@ -311,6 +333,31 @@ public class GameplayMenu implements AppMenu {
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException exception) {
             System.out.println("usage: cheat add -n <count> suns");
         }
+    }
+
+    private void spawnZombie(String input) {
+        GameplaySession session = requireSession();
+        if (session == null) {
+            return;
+        }
+        String[] parts = input.split("\\s+");
+        String type = "basic";
+        for (int i = 0; i < parts.length - 1; i++) {
+            if ("-t".equals(parts[i])) {
+                type = parts[i + 1];
+            }
+        }
+        int[] location = parseLocation(input);
+        if (location == null) {
+            System.out.println("usage: cheat spawn-zombie -t <type> -l <x, y>");
+            return;
+        }
+        if (session.spawnZombie(type, location[0] - 1, location[1] - 1)) {
+            System.out.println("zombie spawned");
+        } else {
+            System.out.println("could not spawn zombie");
+        }
+        System.out.println(session.getSessionState());
     }
 
     private int[] parseLocation(String input) {
